@@ -458,7 +458,7 @@ static void run() {
 int main(int argc, char *argv[]) {
 	int i;
 	unsigned short port = SERVER_PORT;
-	char *key = NULL, *fullname = NULL;
+	char *key = NULL, *fullname = NULL, *dir = NULL;
 	char prefix[_POSIX_PATH_MAX] = "irc";
 
 	if (argc <= 1 || (argc == 2 && argv[1][0] == '-' && argv[1][1] == 'h')) usage();
@@ -471,11 +471,12 @@ int main(int argc, char *argv[]) {
 			case 'n': snprintf(nick,sizeof(nick),"%s", argv[++i]); break;
 			case 'k': key = argv[++i]; break;
 			case 'f': fullname = argv[++i]; break;
+			case 'd': dir = argv[++i]; break;
 			default: usage(); break;
 		}
 	}
 	irc = tcpopen(port);
-	if(!snprintf(path, sizeof(path), "%s/%s", prefix, host)) {
+	if(!snprintf(path, sizeof(path), "%s/%s", prefix, dir ? dir : host)) {
 		fprintf(stderr, "%s", "ii: path to irc directory too long\n");
 		exit(EXIT_FAILURE);
 	}
