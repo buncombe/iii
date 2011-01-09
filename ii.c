@@ -5,14 +5,12 @@
  */
 #include <errno.h>
 #include <netdb.h>
-#include <sys/types.h>
 #include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
 #include <fcntl.h>
 #include <string.h>
-#include <pwd.h>
 #include <signal.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -39,7 +37,7 @@ static int irc;
 static time_t last_response;
 static Channel *channels = NULL;
 static char *host = "irc.freenode.net";
-static char nick[32];			/* might change while running */
+static char nick[32] = "anonymous";	/* might change while running */
 static char path[_POSIX_PATH_MAX];
 static char message[PIPE_BUF]; /* message buf used for communication */
 
@@ -146,10 +144,10 @@ static void rm_channel(Channel *c) {
 
 static void login(char *key, char *fullname) {
 	if(key) snprintf(message, PIPE_BUF,
-				"PASS %s\r\nNICK %s\r\nUSER %s localhost %s :%s\r\n", key,
-				nick, nick, host, fullname ? fullname : nick);
-	else snprintf(message, PIPE_BUF, "NICK %s\r\nUSER %s localhost %s :%s\r\n",
-				nick, nick, host, fullname ? fullname : nick);
+				"PASS %s\r\nNICK %s\r\nUSER %s localhost * :%s\r\n", key,
+				nick, nick, fullname ? fullname : nick);
+	else snprintf(message, PIPE_BUF, "NICK %s\r\nUSER %s localhost * :%s\r\n",
+				nick, nick, fullname ? fullname : nick);
 
 	write(irc, message, strlen(message));	/* login */
 }
@@ -276,7 +274,7 @@ static void proc_channels_input(Channel *c, char *buf) {
 				snprintf(message, PIPE_BUF, "PART %s :%s\r\n", c->name, &buf[3]);
 			else
 				snprintf(message, PIPE_BUF,
-						"PART %s :ii - 500 SLOC are too much\r\n", c->name);
+						"PART %s\r\n", c->name);
 			write(irc, message, strlen(message));
 			close(c->fd);
 			create_filepath(infile, sizeof(infile), c->name, "in");
@@ -419,9 +417,8 @@ static void run() {
 	int r, maxfd;
 	fd_set rd;
 	struct timeval tv;
-	char ping_msg[512];
+	char ping_msg[17] = "PING localhost\r\n";
 
-	snprintf(ping_msg, sizeof(ping_msg), "PING %s\r\n", host);
 	for(;;) {
 		FD_ZERO(&rd);
 		maxfd = irc;
@@ -461,16 +458,9 @@ static void run() {
 int main(int argc, char *argv[]) {
 	int i;
 	unsigned short port = SERVER_PORT;
-	struct passwd *spw = getpwuid(getuid());
 	char *key = NULL, *fullname = NULL;
-	char prefix[_POSIX_PATH_MAX];
+	char prefix[_POSIX_PATH_MAX] = "irc";
 
-	if(!spw) {
-		fprintf(stderr,"ii: getpwuid() failed\n");
-		exit(EXIT_FAILURE);
-	}
-	snprintf(nick, sizeof(nick), "%s", spw->pw_name);
-	snprintf(prefix, sizeof(prefix),"%s/irc", spw->pw_dir);
 	if (argc <= 1 || (argc == 2 && argv[1][0] == '-' && argv[1][1] == 'h')) usage();
 
 	for(i = 1; (i + 1 < argc) && (argv[i][0] == '-'); i++) {
