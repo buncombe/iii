@@ -7,8 +7,8 @@ include config.mk
 SRC      = ii.c
 OBJ      = ${SRC:.c=.o}
 
-all: options ii
-	@echo built ii
+all: options ii wrapper
+	@echo built ii and wrapper
 
 options:
 	@echo ii build options:
@@ -24,7 +24,7 @@ options:
 
 dist: clean
 	@mkdir -p ii-${VERSION}
-	@cp -R query.sh Makefile CHANGES README FAQ LICENSE config.mk ii.c ii.1 ii-${VERSION}
+	@cp -R query.sh Makefile CHANGES README FAQ LICENSE config.mk ii.c ii.1 wrapper.c ii-${VERSION}
 	@tar -cf ii-${VERSION}.tar ii-${VERSION}
 	@gzip ii-${VERSION}.tar
 	@rm -rf ii-${VERSION}
@@ -41,7 +41,7 @@ install: all
 
 	@install -d ${DESTDIR}${BINDIR} ${DESTDIR}${MAN1DIR}
 	@install -m 644 CHANGES README query.sh FAQ LICENSE ${DESTDIR}${DOCDIR}
-	@install -m 775 ii ${DESTDIR}${BINDIR}
+	@install -m 775 ii wrapper ${DESTDIR}${BINDIR}
 	@install -m 444 ii.1 ${DESTDIR}${MAN1DIR}
 	@echo "installed ii"
 
@@ -52,4 +52,8 @@ uninstall: all
 	@echo "uninstalled ii"
 
 clean:
-	rm -f ii *~ *.o *core *.tar.gz
+	rm -f ii wrapper *~ *.o *core *.tar.gz
+
+wrapper: wrapper.o
+	@echo LD $@
+	@${CC} -o $@ $@.o ${LDFLAGS}
