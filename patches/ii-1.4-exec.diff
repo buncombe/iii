@@ -1,0 +1,43 @@
+diff -r d93eaacde742 ii.1
+--- a/ii.1	Fri Jun 25 10:55:05 2010 +0200
++++ b/ii.1	Wed Jul 21 15:57:23 2010 -0700
+@@ -70,6 +70,9 @@
+ .FN /a " [<message>]"
+ mark yourself as away
+ .TP
++.FN /e " cmd"
++execute cmd and write output to current channel
++.TP
+ .FN /j " #channel/nickname [<message>]"
+ join a channel or open private conversation with user
+ .TP
+diff -r d93eaacde742 ii.c
+--- a/ii.c	Fri Jun 25 10:55:05 2010 +0200
++++ b/ii.c	Wed Jul 21 15:57:23 2010 -0700
+@@ -284,6 +284,26 @@
+ 			rm_channel(c);
+ 			return;
+ 			break;
++		case 'e':
++			if(strlen(buf)>=3) {
++				char newbuf[PIPE_BUF];
++				FILE *fp;
++				int len;
++
++				if(!(fp = popen(&buf[3], "r"))) {
++					fprintf(stderr, "error running %s\n", &buf[3]);
++					return;
++				}
++				while (fgets(newbuf, sizeof(newbuf), fp)) {
++					len = strlen(newbuf);
++					if (newbuf[len - 1] == '\n')
++						newbuf[len - 1] = '\0';
++					proc_channels_privmsg(c->name, newbuf);
++				}
++				pclose(fp);
++			}
++			return;
++			break;
+ 		default:
+ 			snprintf(message, PIPE_BUF, "%s\r\n", &buf[1]);
+ 			break;

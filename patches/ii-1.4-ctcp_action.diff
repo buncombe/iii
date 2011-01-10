@@ -1,0 +1,31 @@
+diff -r d93eaacde742 ii.1
+--- a/ii.1	Fri Jun 25 10:55:05 2010 +0200
++++ b/ii.1	Tue Jul 20 10:21:04 2010 -0700
+@@ -76,6 +76,9 @@
+ .FN /l " #channel/nickname"
+ leave a channel or query
+ .TP
++.FN /m " action"
++send action as a CTCP ACTION (think /me)
++.TP
+ .FN /n " nick"
+ change the nick name
+ .TP
+diff -r d93eaacde742 ii.c
+--- a/ii.c	Fri Jun 25 10:55:05 2010 +0200
++++ b/ii.c	Tue Jul 20 10:21:04 2010 -0700
+@@ -284,6 +284,14 @@
+ 			rm_channel(c);
+ 			return;
+ 			break;
++		case 'm':
++			if(strlen(buf)>=3) {
++				char newbuf[PIPE_BUF];
++				snprintf(newbuf, PIPE_BUF, "\01ACTION %s\01", &buf[3]);
++				proc_channels_privmsg(c->name, newbuf);
++			}
++			return;
++			break;
+ 		default:
+ 			snprintf(message, PIPE_BUF, "%s\r\n", &buf[1]);
+ 			break;
