@@ -1,8 +1,6 @@
-/*
- * (C)opyright MMV-MMVI Anselm R. Garbe <garbeam at gmail dot com>
- * (C)opyright MMV-MMVII Nico Golde <nico at ngolde dot de>
- * See LICENSE file for license details.
- */
+/* (C)opyright MMV-MMVI Anselm R. Garbe <garbeam at gmail dot com>
+ * (C)opyright MMV-MMXI Nico Golde <nico at ngolde dot de>
+ * See LICENSE file for license details. */
 #include <errno.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -45,7 +43,7 @@ static void usage() {
 	fprintf(stderr, "%s",
 			"ii - irc it - " VERSION "\n"
 			"(C)opyright MMV-MMVI Anselm R. Garbe\n"
-			"(C)opyright MMV-MMVII Nico Golde\n"
+			"(C)opyright MMV-MMXI Nico Golde\n"
 			"usage: ii [-i <irc dir>] [-s <host>] [-p <port>]\n"
 			"          [-n <nick>] [-k <password>] [-f <fullname>]\n");
 	exit(EXIT_SUCCESS);
@@ -80,16 +78,16 @@ static void create_dirtree(const char *dir) {
 
 static int get_filepath(char *filepath, size_t len, char *channel, char *file) {
 	if(channel) {
-		if(!snprintf(filepath, len, "%s/%s", path, striplower(channel)))
+		if(!snprintf(filepath, len, "%s/%s", path, channel))
 			return 0;
 		create_dirtree(filepath);
-		return snprintf(filepath, len, "%s/%s/%s", path, striplower(channel), file);
+		return snprintf(filepath, len, "%s/%s/%s", path, channel, file);
 	}
 	return snprintf(filepath, len, "%s/%s", path, file);
 }
 
 static void create_filepath(char *filepath, size_t len, char *channel, char *suffix) {
-	if(!get_filepath(filepath, len, channel, suffix)) {
+	if(!get_filepath(filepath, len, striplower(channel), suffix)) {
 		fprintf(stderr, "%s", "ii: path to irc directory too long\n");
 		exit(EXIT_FAILURE);
 	}
@@ -103,9 +101,10 @@ static int open_channel(char *name) {
 	return open(infile, O_RDONLY | O_NONBLOCK, 0);
 }
 
-static void add_channel(char *name) {
+static void add_channel(char *cname) {
 	Channel *c;
 	int fd;
+	char *name = striplower(cname);
 
 	for(c = channels; c; c = c->next)
 		if(!strcmp(name, c->name))
@@ -209,6 +208,7 @@ static void print_out(char *channel, char *buf) {
 	if(strstr(buf, server)) channel="";
 	create_filepath(outfile, sizeof(outfile), channel, "out");
 	if(!(out = fopen(outfile, "a"))) return;
+	if(channel && channel[0]) add_channel(channel);
 
 	strftime(buft, sizeof(buft), "%F %R", localtime(&t));
 	fprintf(out, "%s %s\n", buft, buf);
@@ -223,7 +223,6 @@ static void proc_channels_privmsg(char *channel, char *buf) {
 }
 
 static void proc_channels_input(Channel *c, char *buf) {
-	static char infile[256];
 	char *p = NULL;
 
 	if(buf[0] != '/' && buf[0] != 0) {
@@ -231,7 +230,7 @@ static void proc_channels_input(Channel *c, char *buf) {
 		return;
 	}
 	message[0] = '\0';
-	switch (buf[1]) {
+	if(buf[2] == ' ' || buf[2] == '\0') switch (buf[1]) {
 		case 'j':
 			p = strchr(&buf[3], ' ');
 			if(p) *p = 0;
@@ -277,8 +276,6 @@ static void proc_channels_input(Channel *c, char *buf) {
 						"PART %s\r\n", c->name);
 			write(irc, message, strlen(message));
 			close(c->fd);
-			create_filepath(infile, sizeof(infile), c->name, "in");
-			unlink(infile);
 			rm_channel(c);
 			return;
 			break;
