@@ -16,7 +16,7 @@ DESTDIR		?=
 
 INCDIR		?= ${PREFIX}/include
 LIBDIR		?= ${PREFIX}/lib
-VERSION		?= 1.5
+VERSION		?= 1.6
 EXECUTABLE	?= ii
 
 # includes and libs
