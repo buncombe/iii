@@ -22,11 +22,11 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ===============================================================================
 Author: Evan Gates (emg) <evan.gates@gmail.com>
-Files: ii-1.4-ctcp_action.diff, patches/ii-1.4-autojoin.diff,
-ii-1.4-exec.diff
+Files: patches/ii-1.4-ctcp_action.diff, patches/ii-1.4-autojoin.diff,
+    patches/ii-1.4-exec.diff
 
 Author: Robert Lowry (bobertlo) <robertwlowry@gmail.com>,
-Evan Gates (emg) <evan.gates@gmail.com>
+    Evan Gates (emg) <evan.gates@gmail.com>
 File: patches/ii-1.4-joinuser.diff
 
 Author: Robert Lowry (bobertlo) <robertwlowry@gmail.com>

@@ -7,18 +7,16 @@ ii \- irc it or irc improved
 
 .SH DESCRIPTION
 .B ii
-is a minimalistic FIFO and filesystem based IRC client.
-It creates an irc directory tree with server, channel and
-nick name directories.
-In every directory a FIFO file (in) and and normal file (out)
-is placed. This will be for example ~/irc/irc.freenode.net/.
-The in file is used to communicate with the servers and the out
-files includes the server messages. For every channel and every nick
-name there will be new in and out files.
-The basic idea of this is to be able to communicate with an IRC
-server with basic command line tools.
-For example if you will join a channel just do echo "/j #channel" > in
-and ii creates a new channel directory with in and out file.
+is a minimalistic FIFO and filesystem based IRC client. It creates an IRC
+directory tree with server, channel and nickname directories. In every
+directory a FIFO file (in) and a normal file (out) is placed. This will be for
+example in irc/irc.freenode.net/. The in file is used to communicate with the
+servers and the out files include the server messages. For every channel and
+every nickname, there will be a new in and out file. The idea of this is to be
+able to communicate with an IRC server using basic command line tools.  For
+example if you want to join a channel, just echo "/j #channel" > in and ii
+will create a new channel directory with an in and out file inside it.
+
 .SH SYNOPSIS
 .B ii
 .RB [ \-s
@@ -33,57 +31,64 @@ and ii creates a new channel directory with in and out file.
 .IR nickname ]
 .RB [ \-f
 .IR realname ]
+.RB [ \-d
+.IR directory ]
 
 .SH OPTIONS
 .TP
 .BI \-s " servername"
-lets you override the default servername (irc.freenode.net)
+Lets you override the default servername. (irc.freenode.net)
 .TP
 .BI \-p " port"
-lets you override the default port (6667)
+Lets you override the default port. (6667)
 .TP
 .BI \-k " password"
-lets you use a password to authenticate your nick on the server
-(be aware of the problem that this is visible in the process list, if you
-don't want this use a query to submit your password)
+Lets you use a password to authenticate your nickname on the server. (Be aware
+of the problem that this is visible in the process list. If you don't want
+this, then simply use a query to submit your password.)
 .TP
 .BI \-i " prefix"
-lets you override the default irc path (~/irc)
+Lets you override the default IRC path. (irc)
 .TP
 .BI \-n " nickname"
-lets you override the default nick ($USER)
+Lets you override the default nickname. (anonymous)
 .TP
 .BI \-f " realname"
-lets you specify your real name associated with your nick
+Lets you specify your real name associated with your nickname.
+.TP
+.BI \-d " directory"
+Lets you override the servername part in the directory tree structure. Useful
+with the wrapper program as the servername then might change.
 
 .SH DIRECTORIES
 .TP
-.FN ~/irc
-In this directory the irc tree will be created. In this directory you
-will find a directory for your server (default: irc.freenode.net) in
-which the FIFO and the output file will be stored.
-If you join a channel a new directory with the name of the channel
-will be created in the ~/irc/$servername/ directory.
+.FN irc
+In this directory the IRC tree will be created and inside it you will find a
+directory for your server (default: irc.freenode.net) in which the FIFO and the
+output file will be stored. If you join a channel, a new directory with the
+name of it will be created in the irc/$servername/ directory. ($servername can
+be overridden with $directory.)
 
 .SH COMMANDS
+Everything which is not a command, will simply be posted into the channel or to
+the server. So if you need /who just write /WHO as described in the RFC to the
+in FIFO file of the server.
 .TP
 .FN /j " #channel/nickname [<message>]"
-join a channel or open private conversation with user
+Join a channel or open a private conversation with another user.
 .TP
-.FN /l " #channel/nickname"
-leave a channel or query
+.FN /l " #channel/nickname [<message>]"
+Leave a channel or query.
 .TP
-.FN /n " nick"
-change the nick name
+.FN /n " nickname"
+Change the nickname.
 .TP
 .FN /t " topic"
-set the topic of a channel
-.TP
-Everything which is not a command will simply be posted into the channel or to the server.
-So if you need /who just write /WHO as described in the RFC to the server in FIFO.
+Set the topic of a channel.
 .TP
 .FN "out file usage"
-Write wrappers, pagers or use your tools of choice to display the out file contents (loco, multitail, etc.). 
+Write wrappers, pagers or use your tools of choice to display the out file
+contents (loco, multitail, etc.). 
 .SH CONTACT
 .TP
 Write to ii (at) modprobe (dot) de for suggestions, fixes, 7|-|>< ;) etc.
@@ -92,4 +97,4 @@ Copyright \(co 2005-2006 by Anselm R. Garbe <garbeam (at) gmail (dot) com> and
 Copyright \(co 2005-2008 by Nico Golde <nico (at) ngolde (dot) de>
 .SH SEE ALSO
 .BR echo (1),
-.BR tail (1),
+.BR tail (1)
