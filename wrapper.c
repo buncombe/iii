@@ -34,7 +34,7 @@ main(int argc, char **argv)
 	for (i = 2; i < uargc; i++)
 		if (i % 2 == 1) {
 			/*
-			 * Permit port numbers that are in the range 0 < p <
+			 * Permit port numbers that are in the range 0 < p <=
 			 * 65535.
 			 */
 			if (atoi(argv[i]) < 1 || atoi(argv[i]) > 65535)
@@ -49,9 +49,9 @@ main(int argc, char **argv)
 		} else {
 			/*
 			 * Permitted characters in the hostname fields:
-			 * 	a-z	(0x61 < c < 0x7a)
-			 *	0-9	(0x30 < c < 0x39)
-			 *	A-Z	(0x41 < c < 0x5a)
+			 * 	a-z	(0x61 <= c <= 0x7a)
+			 *	0-9	(0x30 <= c <= 0x39)
+			 *	A-Z	(0x41 <= c <= 0x5a)
 			 *	.-
 			 */
 			for (j = 0; j < strlen(argv[i]); j++)
