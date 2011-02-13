@@ -126,7 +126,7 @@ main(int argc, char **argv)
 				continue;
 			}
 
-			sleep(60);
+			sleep(SSLEEP);
 			system(args[1]);
 			_exit(0);
 		} else {
