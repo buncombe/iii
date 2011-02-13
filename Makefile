@@ -24,7 +24,7 @@ options:
 
 dist: clean
 	@mkdir -p ii-${VERSION}
-	@cp -R query.sh Makefile CHANGES README FAQ LICENSE config.mk ii.c ii.1 wrapper.c ii-${VERSION}
+	@cp -R query.sh Makefile CHANGES README FAQ LICENSE config.mk ii.c ii.1 wrapper.c wrapper.1 ii-${VERSION}
 	@tar -cf ii-${VERSION}.tar ii-${VERSION}
 	@gzip ii-${VERSION}.tar
 	@rm -rf ii-${VERSION}
