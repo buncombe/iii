@@ -47,6 +47,7 @@ install: all
 
 uninstall: all
 	@rm -f ${DESTDIR}/${MAN1DIR}/ii.1
+	@rm -f ${DESTDIR}/${MAN1DIR}/wrapper.1
 	@rm -rf ${DESTDIR}/${DOCDIR}
 	@rm -f ${DESTDIR}/${BINDIR}/ii
 	@rm -f ${DESTDIR}/${BINDIR}/wrapper
