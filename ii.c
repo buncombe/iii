@@ -44,7 +44,8 @@ static void usage() {
 			"(C)opyright MMV-MMVI Anselm R. Garbe\n"
 			"(C)opyright MMV-MMXI Nico Golde\n"
 			"usage: ii [-i <irc dir>] [-s <host>] [-p <port>]\n"
-			"          [-n <nick>] [-k <password>] [-f <fullname>]\n");
+			"          [-n <nick>] [-k <password>] [-f <fullname>]\n"
+			"          [-d <directory>]\n");
 	exit(EXIT_SUCCESS);
 }
 

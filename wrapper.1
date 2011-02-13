@@ -1,0 +1,74 @@
+.Dd $Mdocdate$
+.Dt WRAPPER 1
+.Os
+.Sh NAME
+.Nm wrapper
+.Nd wraps
+.Xr ii 1
+and allows execution on connect.
+.Sh SYNOPSIS
+.Nm
+.Op Fl i Ar ii arg
+.Op Fl s Ar sh arg
+.Ar -- host1 port1
+.Op Ar host2 port2 ...
+.Sh DESCRIPTION
+The
+.Nm
+utility randomly selects one pair of
+.Ar hosts
+and
+.Ar ports
+before it passes the pair as arguments to
+.Xr ii 1 
+using
+.Xr system 3 .
+Additional arguments can be given to
+.Xr ii 1
+by specifying them in
+.Ar ii arg .
+In case
+.Xr ii 1
+exits, this procedure is done all over again.
+
+If
+.Ar sh arg
+is given,
+.Nm
+forks and then initializes
+.Xr ii 1 .
+The child process sleeps for 60 seconds (default) before passing
+.Ar sh arg
+to
+.Xr system 3 .
+This is useful in order to, for example, authenticate with NickServ or rejoin
+IRC channels after a disconnection.
+.Sh SEE ALSO
+.Xr ii 1 ,
+.Xr sh 1 ,
+.Xr fork 3 ,
+.Xr sleep 3 ,
+.Xr system 3
+.Sh CAVEATS
+Notice that
+.Xr sh 1
+meta-characters must be escaped in both
+.Ar ii arg
+and
+.Ar sh arg
+and that the
+.Fl s
+and
+.Fl p
+flags of
+.Xr ii 1
+have no effect in
+.Ar ii arg .
+
+To prevent
+.Xr ii 1
+from choosing different server directories as connections are made to various
+.Ar hosts ,
+pass it the
+.Fl d
+flag. The argument of the flag will override this part of the file path.

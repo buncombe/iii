@@ -42,7 +42,7 @@ install: all
 	@install -d ${DESTDIR}/${BINDIR} ${DESTDIR}/${MAN1DIR}
 	@install -m 644 CHANGES README query.sh FAQ LICENSE ${DESTDIR}/${DOCDIR}
 	@install -m 775 ii wrapper ${DESTDIR}/${BINDIR}
-	@install -m 444 ii.1 ${DESTDIR}/${MAN1DIR}
+	@install -m 444 ii.1 wrapper.1 ${DESTDIR}/${MAN1DIR}
 	@echo "installed ii and wrapper"
 
 uninstall: all

@@ -38,8 +38,5 @@ use ii to generate channel stats. Your imagination should be boundless.
 6. How can I automatically reconnect to a server or network?
 ---------------------------------------------------------
 As you might have guessed, ii does not support this feature. The fact is
-however that it easily can be done by scripting or with the wrapper program
-that is shipped with this package of ii. What the wrapper does not do, though,
-is to join specific channels or handle registering functionality that a lot of
-networks provide. Check the queries.sh script instead for this sort of
-operations and read FAQ entry 4.
+however that it easily can be done by scripting or with the wrapper(1) program
+that is shipped with this package of ii.
