@@ -46,11 +46,11 @@ main(int argc, char **argv)
 			/* NOTREACHED */
 		}
 
-	for (o = 1; o < uargc - 1; o++)
-		if (argv[o][0] == '-' && argv[o][1] == '-')
+	for (o = 1; o < uargc - 2; o++)
+		if (!strcmp(argv[o], "--"))
 			break;
-	o++; /* argv[k] is now the first hostname, hopefully: */
-	if (o == uargc || (uargc - o) & 1) usage();
+	o++; /* argv[o] is now the first hostname, hopefully: */
+	if ((uargc - o) & 1) usage();
 
 	for (n = o; n < uargc; n++) /* Validate the hosts and ports. */
 		if ((n - o) & 1) {
