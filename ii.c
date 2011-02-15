@@ -248,6 +248,7 @@ static void proc_channels_input(Channel *c, char *buf) {
 			}
 			break;
 		case 't':
+			/* FIXME: Support for a given channel and to omit topic */
 			if(strlen(buf)>=3) snprintf(message, PIPE_BUF, "TOPIC %s :%s\r\n", c->name, &buf[3]);
 			break;
 		case 'a':
@@ -272,8 +273,7 @@ static void proc_channels_input(Channel *c, char *buf) {
 			if(buf[2] == ' ' && strlen(buf)>=3)
 				snprintf(message, PIPE_BUF, "PART %s :%s\r\n", c->name, &buf[3]);
 			else
-				snprintf(message, PIPE_BUF,
-						"PART %s\r\n", c->name);
+				snprintf(message, PIPE_BUF, "PART %s\r\n", c->name);
 			write(irc, message, strlen(message));
 			close(c->fd);
 			rm_channel(c);

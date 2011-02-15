@@ -5,12 +5,13 @@
 .Nm wrapper
 .Nd wraps
 .Xr ii 1
-and allows execution on connect.
+and allows execution on connect
 .Sh SYNOPSIS
 .Nm
 .Op Fl i Ar ii arg
 .Op Fl s Ar sh arg
-.Ar -- host1 port1
+.Fl -
+.Ar host1 port1
 .Op Ar host2 port2 ...
 .Sh DESCRIPTION
 The
@@ -20,7 +21,7 @@ utility randomly selects one pair of
 and
 .Ar ports
 before it passes the pair as arguments to
-.Xr ii 1 
+.Xr ii 1
 using
 .Xr system 3 .
 Additional arguments can be given to
@@ -30,7 +31,7 @@ by specifying them in
 In case
 .Xr ii 1
 exits, this procedure is done all over again.
-
+.Pp
 If
 .Ar sh arg
 is given,
@@ -49,6 +50,12 @@ IRC channels after a disconnection.
 .Xr fork 3 ,
 .Xr sleep 3 ,
 .Xr system 3
+.Sh HISTORY
+The development of
+.Nm
+began in the early 2011's with the first version released on January 9, 2011
+via
+.Lk http://repo.or.cz/w/iii.git .
 .Sh CAVEATS
 Notice that
 .Xr sh 1
@@ -64,11 +71,12 @@ flags of
 .Xr ii 1
 have no effect in
 .Ar ii arg .
-
+.Pp
 To prevent
 .Xr ii 1
 from choosing different server directories as connections are made to various
 .Ar hosts ,
 pass it the
 .Fl d
-flag. The argument of the flag will override this part of the file path.
+flag.
+The argument of the flag will override this part of the file path.

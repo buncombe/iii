@@ -1,25 +1,24 @@
 Abstract
 --------
-ii is a minimalistic FIFO and filesystem based IRC client.  It creates an irc
-directory tree with server, channel and nick name directories.  In every
-directory a FIFO file (in) and and normal file (out) is placed.
+ii(1) is a minimalistic FIFO and filesystem based IRC client. It creates an IRC
+directory tree with server, channel and nickname directories. In every
+directory a FIFO file (in) and a normal file (out) is created. This will be, for
+example, in irc/irc.freenode.net/.
 
-The in file is used to communicate with the servers and the out files include
-the server messages. For every channel and every nick name there will be new in
-and out files.
-
-The basic idea of this is to be able to communicate with an IRC server with
-standard command line tools.  For example if you want to join a channel just do
-echo "/j #channel" > in and ii creates a new channel directory with in and out
-file.
+The in files are used to communicate with the servers and the out files include
+the server messages. For every channel and every nickname, there will be a new
+in and out file. The idea of this is to be able to communicate with an IRC
+server using basic command line tools. Take an example: if you want to join a
+channel, just `echo "/j #channel" > in` and ii(1) will create a new channel
+directory with an in and out file inside it.
 
 Installation
 ------------
-Edit config.mk to match your local setup. ii is installed into
-/usr/local by default.
+Edit config.mk to match your local setup. ii(1) is installed into /usr/local by
+default.
 
-Afterwards enter the following command to build and install ii (if
-necessary as root):
+Afterwards enter the following command to build and install ii(1) and
+wrapper(1) (if necessary as root):
 
     $ make clean install
 

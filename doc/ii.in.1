@@ -1,0 +1,153 @@
+.Dd $Mdocdate$
+.Dt II 1
+.Os
+.Sh NAME
+.Nm ii
+.Nd IRC it or IRC improved
+.Sh SYNOPSIS
+.Nm
+.Op Fl d Ar directory
+.Op Fl f Ar realname
+.Op Fl i Ar prefix
+.Op Fl k Ar password
+.Op Fl n Ar nickname
+.Op Fl p Ar port
+.Op Fl s Ar servername
+.Sh DESCRIPTION
+.Nm
+is a minimalistic FIFO and file system based IRC client.
+Upon connection, it creates an IRC directory
+.Ar prefix
+which contains the server directory that can be overridden by
+.Ar directory .
+Beyond the path, inside the server directory, there are channel and nickname
+directories together with a FIFO file named "ii" and a regular one called
+"out".
+These two latter files do also occur inside each channel and nickname
+directory, which themselves are created upon joining a channel or opening of a
+private conversation.
+.Pp
+The FIFO files "in" are used to communicate with the server, while the regular
+"out" files carry the server messages.
+If the data sent to an "in" file is not an IRC command, in other words not
+starting with a slash "/", it will be interpreted as a regular message (PRIVMSG)
+which later pops up in the "out" file in the same directory level.
+.Pp
+The idea of this file system structure, is to be able to communicate with an
+IRC server using basic command line tools.
+For example, if the desired action is to join a channel, the command
+.Cm echo "/j #channel" > in
+will do the trick no matter which "in" FIFO file it is addressed to, as long as
+the file is in use by the current instance of
+.Nm .
+For more information about available commands, see further down in this
+section.
+.Pp
+The arguments are as follows, with the default value enclosed within brackets:
+.Bl -tag -width Ds
+.It Fl d Ar directory
+Overrides the
+.Ar servername
+part within the directory structure that
+.Nm
+creates.
+.It Fl f Ar realname
+The real name that is to be associated with the
+.Ar nickname .
+.It Fl i Ar prefix
+The directory in which
+.Nm
+will create its server directory.
+(irc)
+.It Fl k Ar password
+A password used to authenticate the
+.Ar nickname
+with the server. Be aware of the problem that it will be visible in the process
+list.
+If this is not a desired side-effect, then simply use a query to submit the
+password.
+.It Fl n Ar nickname
+The used nickname during the IRC session.
+This is of course also possible to change in a later stage by querying the
+server using the
+.Cm /n
+command.
+(anonymous)
+.It Fl p Ar port
+The port that
+.Nm
+will connect to on the specific
+.Ar servername .
+(6667)
+.It Fl s Ar servername
+The server to which
+.Nm
+will connect.
+(irc.freenode.net)
+.El
+.Pp
+The commands that
+.Nm
+understands are as follows:
+.Bl -tag -width Ds
+.It Cm /a [message]
+Used in order to mark oneself as away.
+The server will send the
+.Ar message
+automatically in reply to a PRIVMSG directed at the user (you).
+If
+.Ar message
+is omitted, the away status is removed.
+.It Cm /j #channel/nickname [message]
+Join a channel or open a private conversation with another user having the nick
+.Ar nickname .
+If the purpose is to join a channel, then the
+.Ar message
+is meaning the key that is needed in order to join the password protected
+channel.
+When opening a private conversation, then the
+.Ar message
+is sent to the
+.Ar nickname
+as a PRIVMSG.
+.It Cm /l [comment]
+Causes the user to leave the current channel with an optional
+.Ar comment .
+This must be sent to the "in" FIFO file located within the channel directory.
+.It Cm /n nickname
+Change the nick to
+.Ar nickname .
+.It Cm /t [#channel] [topic]
+Change the topic of the specified channel, or the current one if omitted, to
+.Ar topic .
+If
+.Ar topic
+is skipped, the server will report what the current topic is to the "out" file
+which is in the server directory.
+.El
+.Sh FILES
+.Bl -tag -width Ds
+.It Cm in
+The FIFO files "in" are used to communicate with the server.
+.It Cm irc
+Inside this directory is the server directory and within the last one, there
+are channel and nickname directories together with a FIFO file named "ii" and a
+regular one called "out".
+These two latter files do also occur inside each channel and nickname
+directory, which themselves are created upon joining a channel or opening of a
+private conversation.
+.Pp
+It is possible to override
+.Cm irc
+by specifying the
+.Ar prefix
+argument.
+.It Cm out
+These files carry the server messages.
+.El
+.Sh SEE ALSO
+.Xr echo 1 ,
+.Xr tail 1
+.Sh AUTHORS
+.An Copyright \(co 2005-2006 by Anselm R. Garbe <garbeam (at) gmail (dot) com>
+.An Copyright \(co 2005-2008 by Nico Golde <nico (at) ngolde (dot) de>

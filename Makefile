@@ -4,35 +4,61 @@
 
 include config.mk
 
-SRC      = ii.c
-OBJ      = ${SRC:.c=.o}
+# Configuration:
+.SUFFIXES: .in.1 .1 .1.html .1.txt
+PROJECT	= ii
+DOCSRC	= doc/ # Should end with a slash.
+CSRCS	= ii.c wrapper.c
+MANSRCS	= ${DOCSRC}ii.in.1 ${DOCSRC}wrapper.in.1
 
-all: options ii wrapper
-	@echo built ii and wrapper
+all: options ${CSRCS:.c=} ${MANSRCS:.in.1=.1}
+	@echo Built the sources and formatted the manpages.
 
 options:
-	@echo ii build options:
+	@echo Build options:
 	@echo "LIBS     = ${LIBS}"
 	@echo "INCLUDES = ${INCLUDES}"
 	@echo "CFLAGS   = ${CFLAGS}"
 	@echo "LDFLAGS  = ${LDFLAGS}"
 	@echo "CC       = ${CC}"
 
+# Building the sources:
 .c.o:
 	@echo CC $<
 	@${CC} -c ${CFLAGS} $<
 
-dist: clean
-	@mkdir -p ii-${VERSION}
-	@cp -R query.sh Makefile CHANGES README FAQ LICENSE config.mk ii.c ii.1 wrapper.c wrapper.1 ii-${VERSION}
-	@tar -cf ii-${VERSION}.tar ii-${VERSION}
-	@gzip ii-${VERSION}.tar
-	@rm -rf ii-${VERSION}
-	@echo created distribution ii-${VERSION}.tar.gz
+.o:
+	@echo LD $<
+	@${CC} -o $@ $< ${LDFLAGS}
 
-ii: ${OBJ}
-	@echo LD $@
-	@${CC} -o $@ ${OBJ} ${LDFLAGS}
+${CSRCS:.c=}: $@.o $@
+
+# Formatting the manpages:
+.in.1.1:
+	@echo MDOC TERM $<
+	@mandoc -Tlint $<
+	@cp -f $< $@
+
+.1.1.html:
+	@echo MDOC HTML $<
+	@mandoc -Thtml -Wall -fstrict $< >$@
+
+.1.1.txt:
+	@echo MDOC TXT $<
+	@mandoc -Wall -fstrict $< | col -b >$@
+
+format: ${MANSRCS:.in.1=.1.txt} ${MANSRCS:.in.1=.1.html}
+
+dist: all format
+	@mkdir -p ${PROJECT}-${VERSION}/${DOCSRC}
+	@cp -R query.sh Makefile CHANGES README LICENSE config.mk ${CSRCS} \
+	    ${PROJECT}-${VERSION}
+	@cp -R ${DOCSRC}FAQ ${MANSRCS} ${MANSRCS:.in.1=.1.txt} \
+	    ${MANSRCS:.in.1=.1.html} ${PROJECT}-${VERSION}/${DOCSRC}
+	@tar -cf ${PROJECT}-${VERSION}.tar ${PROJECT}-${VERSION}
+	@gzip ${PROJECT}-${VERSION}.tar
+	@rm -rf ${PROJECT}-${VERSION}
+	@echo Created distribution ${PROJECT}-${VERSION}.tar.gz.
 
 install: all
 	@mkdir -p ${DESTDIR}/${DOCDIR}
@@ -40,22 +66,22 @@ install: all
 	@mkdir -p ${DESTDIR}/${MAN1DIR}
 
 	@install -d ${DESTDIR}/${BINDIR} ${DESTDIR}/${MAN1DIR}
-	@install -m 644 CHANGES README query.sh FAQ LICENSE ${DESTDIR}/${DOCDIR}
-	@install -m 775 ii wrapper ${DESTDIR}/${BINDIR}
-	@install -m 444 ii.1 wrapper.1 ${DESTDIR}/${MAN1DIR}
-	@echo "installed ii and wrapper"
+	@install -m 644 CHANGES README query.sh ${DOCSRC}FAQ LICENSE \
+	    ${DESTDIR}/${DOCDIR}
+	@install -m 775 ${CSRCS:.c=} ${DESTDIR}/${BINDIR}
+	@install -m 444 ${MANSRCS:.in.1=.1} ${DESTDIR}/${MAN1DIR}
+	@echo Installed everything.
 
 uninstall: all
-	@rm -f ${DESTDIR}/${MAN1DIR}/ii.1
-	@rm -f ${DESTDIR}/${MAN1DIR}/wrapper.1
+.for mansrc in ${MANSRCS:.in.1=.1}
+	@rm -f ${DESTDIR}/${MAN1DIR}/${mansrc}
+.endfor
 	@rm -rf ${DESTDIR}/${DOCDIR}
-	@rm -f ${DESTDIR}/${BINDIR}/ii
-	@rm -f ${DESTDIR}/${BINDIR}/wrapper
-	@echo "uninstalled ii and wrapper"
+.for exec in ${CSRCS:.c=}
+	@rm -f ${DESTDIR}/${BINDIR}/${exec}
+.endfor
+	@echo Uninstalled everything.
 
 clean:
-	rm -f ii wrapper *~ *.o *core *.tar.gz
-
-wrapper: wrapper.o
-	@echo LD $@
-	@${CC} -o $@ $@.o ${LDFLAGS}
+	rm -f ${CSRCS:.c=} */*~ *.o *core *.tar.gz ${MANSRCS:.in.1=.1} \
+	    ${MANSRCS:.in.1=.1.txt} ${MANSRCS:.in.1=.1.html}
