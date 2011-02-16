@@ -98,7 +98,7 @@ automatically in reply to a PRIVMSG directed at the user (you).
 If
 .Ar message
 is omitted, the away status is removed.
-.It Cm /j #channel/nickname [message]
+.It Cm /j #channel/nickname [message]/message
 Join a channel or open a private conversation with another user having the nick
 .Ar nickname .
 If the purpose is to join a channel, then the
@@ -107,7 +107,7 @@ is meaning the key that is needed in order to join the password protected
 channel.
 When opening a private conversation, then the
 .Ar message
-is sent to the
+(compulsory) is sent to the
 .Ar nickname
 as a PRIVMSG.
 .It Cm /l [comment]
@@ -151,3 +151,14 @@ These files carry the server messages.
 .Sh AUTHORS
 .An Copyright \(co 2005-2006 by Anselm R. Garbe <garbeam (at) gmail (dot) com>
 .An Copyright \(co 2005-2008 by Nico Golde <nico (at) ngolde (dot) de>
+.Sh CAVEATS
+.Nm
+cannot tell whether a specific user exists when the
+.Cm /j
+command is used to open a private conversation.
+This means that it always succeeds if the syntax is correct, even if nobody
+will receive the
+.Ar message . 
+However, the server will, in these cases, report when a specific user is not
+available, so a check in the "out" file, in the server directory, works as a
+solution to this problem.  

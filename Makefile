@@ -74,7 +74,7 @@ install: all
 
 uninstall: all
 .for mansrc in ${MANSRCS:.in.1=.1}
-	@rm -f ${DESTDIR}/${MAN1DIR}/${mansrc}
+	@rm -f ${DESTDIR}/${MAN1DIR}/`basename ${mansrc}`
 .endfor
 	@rm -rf ${DESTDIR}/${DOCDIR}
 .for exec in ${CSRCS:.c=}

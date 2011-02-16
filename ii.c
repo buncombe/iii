@@ -232,48 +232,55 @@ static void proc_channels_input(Channel *c, char *buf) {
 	message[0] = '\0';
 	if(buf[2] == ' ' || buf[2] == '\0') switch (buf[1]) {
 		case 'j':
-			p = strchr(&buf[3], ' ');
-			if(p) *p = 0;
+			if(buf[3] != ' '){
+				p = strchr(&buf[3], ' ');
+				if(p) *p = 0;
+			}
 			if((buf[3]=='#')||(buf[3]=='&')||(buf[3]=='+')||(buf[3]=='!')){
 				if(p) snprintf(message, PIPE_BUF, "JOIN %s %s\r\n", &buf[3], p + 1); /* password protected channel */
 				else snprintf(message, PIPE_BUF, "JOIN %s\r\n", &buf[3]);
 				add_channel(&buf[3]);
 			}
 			else {
-				if(p){
+				if(p && buf[3] != ' '){
 					add_channel(&buf[3]);
 					proc_channels_privmsg(&buf[3], p + 1);
-					return;
 				}
+				return;
 			}
 			break;
 		case 't':
-			/* FIXME: Support for a given channel and to omit topic */
-			if(strlen(buf)>=3) snprintf(message, PIPE_BUF, "TOPIC %s :%s\r\n", c->name, &buf[3]);
+			if(buf[3] != ' '){
+				p = strchr(&buf[3], ' ');
+				if(p) *p = 0;
+			}
+			if((buf[3]=='#')||(buf[3]=='&')||(buf[3]=='+')||(buf[3]=='!')){
+				if(p) snprintf(message, PIPE_BUF, "TOPIC %s :%s\r\n", &buf[3], p + 1);
+				else snprintf(message, PIPE_BUF, "TOPIC %s\r\n", &buf[3]);
+			}
+			else {
+				if(c->name[0] == 0) return;
+				if(strlen(buf)>3) snprintf(message, PIPE_BUF, "TOPIC %s :%s\r\n", c->name, &buf[3]);
+				else snprintf(message, PIPE_BUF, "TOPIC %s\r\n", c->name);
+			}
 			break;
 		case 'a':
-			if(strlen(buf)>=3){
+			if(strlen(buf)>3){
 				snprintf(message, PIPE_BUF, "-!- %s is away \"%s\"", nick, &buf[3]);
 				print_out(c->name, message);
-			}
-			if(buf[2] == 0 || strlen(buf)<3) /* or used to make else part safe */
-				snprintf(message, PIPE_BUF, "AWAY\r\n");
-			else
 				snprintf(message, PIPE_BUF, "AWAY :%s\r\n", &buf[3]);
+			} else snprintf(message, PIPE_BUF, "AWAY\r\n");
 			break;
 		case 'n':
-			if(strlen(buf)>=3){
+			if(strlen(buf)>3){
 				snprintf(nick, sizeof(nick),"%s", &buf[3]);
 				snprintf(message, PIPE_BUF, "NICK %s\r\n", &buf[3]);
 			}
 			break;
 		case 'l':
-			if(c->name[0] == 0)
-				return;
-			if(buf[2] == ' ' && strlen(buf)>=3)
-				snprintf(message, PIPE_BUF, "PART %s :%s\r\n", c->name, &buf[3]);
-			else
-				snprintf(message, PIPE_BUF, "PART %s\r\n", c->name);
+			if(c->name[0] == 0) return;
+			if(strlen(buf)>3) snprintf(message, PIPE_BUF, "PART %s :%s\r\n", c->name, &buf[3]);
+			else snprintf(message, PIPE_BUF, "PART %s\r\n", c->name);
 			write(irc, message, strlen(message));
 			close(c->fd);
 			rm_channel(c);
