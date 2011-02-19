@@ -1,3 +1,8 @@
+/*
+ * The author of this work has dedicated it to the public by waiving all of his
+ * or her rights to the work under copyright law and all related or neighboring
+ * legal rights he or she had in the work, to the extent allowable by law.
+ */
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
