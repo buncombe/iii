@@ -232,17 +232,16 @@ static void proc_channels_input(Channel *c, char *buf) {
 	message[0] = '\0';
 	if(buf[2] == ' ' || buf[2] == '\0') switch (buf[1]) {
 		case 'j':
-			if(buf[3] != ' '){
-				p = strchr(&buf[3], ' ');
-				if(p) *p = 0;
-			}
+			if(buf[3] == ' ' || buf[3] == '\0') return;
+			p = strchr(&buf[3], ' ');
+			if(p) *p = 0;
 			if((buf[3]=='#')||(buf[3]=='&')||(buf[3]=='+')||(buf[3]=='!')){
-				if(p) snprintf(message, PIPE_BUF, "JOIN %s %s\r\n", &buf[3], p + 1); /* password protected channel */
+				if(p && strlen(p + 1)) snprintf(message, PIPE_BUF, "JOIN %s %s\r\n", &buf[3], p + 1); /* password protected channel */
 				else snprintf(message, PIPE_BUF, "JOIN %s\r\n", &buf[3]);
 				add_channel(&buf[3]);
 			}
 			else {
-				if(p && buf[3] != ' '){
+				if(p && strlen(p + 1)){
 					add_channel(&buf[3]);
 					proc_channels_privmsg(&buf[3], p + 1);
 				}
@@ -250,12 +249,10 @@ static void proc_channels_input(Channel *c, char *buf) {
 			}
 			break;
 		case 't':
-			if(buf[3] != ' '){
+			if((buf[3]=='#')||(buf[3]=='&')||(buf[3]=='+')||(buf[3]=='!')){
 				p = strchr(&buf[3], ' ');
 				if(p) *p = 0;
-			}
-			if((buf[3]=='#')||(buf[3]=='&')||(buf[3]=='+')||(buf[3]=='!')){
-				if(p) snprintf(message, PIPE_BUF, "TOPIC %s :%s\r\n", &buf[3], p + 1);
+				if(p && strlen(p + 1)) snprintf(message, PIPE_BUF, "TOPIC %s :%s\r\n", &buf[3], p + 1);
 				else snprintf(message, PIPE_BUF, "TOPIC %s\r\n", &buf[3]);
 			}
 			else {
