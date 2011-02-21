@@ -20,7 +20,7 @@ VERSION		?= 1.6
 # The ii(1) executable that the wrapper(1) program will use: 
 EXECUTABLE	?= ii
 # Amount of seconds that it (generally) takes for ii(1) to connect:
-SSLEEP		?= 60
+SSLEEP		?= 300
 
 # Includes and libs:
 INCLUDES	+= -I. -I${INCDIR} -I/usr/include
