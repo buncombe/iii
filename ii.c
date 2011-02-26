@@ -15,13 +15,19 @@
 #include <ctype.h>
 #include <time.h>
 #include <unistd.h>
+#include <openssl/rand.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 
 #ifndef PIPE_BUF /* FreeBSD don't know PIPE_BUF */
 #define PIPE_BUF 4096
 #endif
 #define PING_TIMEOUT 300
 #define SERVER_PORT 6667
+#define SSL_SERVER_PORT 6697
 #define IS_CHANNEL(s) (((s)[0]=='#')||((s)[0]=='&')||((s)[0]=='+')||((s)[0]=='!'))
+#define WRITE(conn, msg) (use_ssl ? SSL_write(irc->sslHandle, msg, strlen(msg)) : write(conn->irc, msg, strlen(msg)))
+#define READ(fd, buf, s) (from_srv && use_ssl ? SSL_read(irc->sslHandle, buf, s) : read(fd, buf, s))
 enum { TOK_NICKSRV = 0, TOK_USER, TOK_CMD, TOK_CHAN, TOK_ARG, TOK_TEXT, TOK_LAST };
 
 typedef struct Channel Channel;
@@ -30,8 +36,16 @@ struct Channel {
 	char *name;
 	Channel *next;
 };
+typedef struct {
+	int irc;
+	SSL *sslHandle;
+	SSL_CTX *sslContext;
+} conn;
 
-static int irc;
+static size_t use_ssl = 0;
+static conn *irc;
+static unsigned char fp[EVP_MAX_MD_SIZE];
+static int fp_len;
 static time_t last_response;
 static Channel *channels = NULL;
 static char *host = "irc.freenode.net";
@@ -149,10 +163,38 @@ static void login(char *key, char *fullname) {
 				nick, nick, fullname ? fullname : nick);
 	else snprintf(message, PIPE_BUF, "NICK %s\r\nUSER %s localhost * :%s\r\n",
 				nick, nick, fullname ? fullname : nick);
-	write(irc, message, strlen(message));	/* login */
+	WRITE(irc, message);	/* login */
 }
 
-static int tcpopen(unsigned short port) {
+static conn *ssl_connect(int fd) {
+	conn *c = NULL;
+
+	c = malloc(sizeof(conn));
+	if(!c) {
+		perror("ii: cannot allocate memory");
+		exit(EXIT_FAILURE);
+	}
+	c->irc = fd;
+
+	if (use_ssl) {
+		c->sslHandle = NULL;
+		c->sslContext = NULL;
+		SSL_load_error_strings();
+		SSL_library_init();
+		c->sslContext = SSL_CTX_new(SSLv23_client_method());
+		if(c->sslContext == NULL)
+			ERR_print_errors_fp(stderr);
+		c->sslHandle = SSL_new(c->sslContext);
+		if(!SSL_set_fd(c->sslHandle, c->irc) || SSL_connect(c->sslHandle) != 1)
+			ERR_print_errors_fp(stderr);
+		if(!X509_digest(SSL_get_peer_certificate(c->sslHandle), EVP_md5(), fp, &fp_len))
+			ERR_print_errors_fp(stderr);
+	}
+
+	return c;
+}
+
+static conn *tcpopen(unsigned short port) {
 	int fd;
 	struct sockaddr_in sin;
 	struct hostent *hp = gethostbyname(host);
@@ -173,7 +215,7 @@ static int tcpopen(unsigned short port) {
 		perror("ii: cannot connect to host");
 		exit(EXIT_FAILURE);
 	}
-	return fd;
+	return ssl_connect(fd);
 }
 
 static size_t tokenize(char **result, size_t reslen, char *str, char delim) {
@@ -220,7 +262,7 @@ static void proc_channels_privmsg(char *channel, char *buf) {
 	snprintf(message, PIPE_BUF, "<%s> %s", nick, buf);
 	print_out(channel, message);
 	snprintf(message, PIPE_BUF, "PRIVMSG %s :%s\r\n", channel, buf);
-	write(irc, message, strlen(message));
+	WRITE(irc, message);
 }
 
 static void proc_channels_input(Channel *c, char *buf) {
@@ -277,7 +319,7 @@ static void proc_channels_input(Channel *c, char *buf) {
 			if(c->name[0] == 0) return;
 			if(strlen(buf)>3) snprintf(message, PIPE_BUF, "PART %s :%s\r\n", c->name, &buf[3]);
 			else snprintf(message, PIPE_BUF, "PART %s\r\n", c->name);
-			if(IS_CHANNEL(c->name)) write(irc, message, strlen(message));
+			if(IS_CHANNEL(c->name)) WRITE(irc, message);
 			close(c->fd);
 			rm_channel(c);
 			return;
@@ -289,7 +331,7 @@ static void proc_channels_input(Channel *c, char *buf) {
 		snprintf(message, PIPE_BUF, "%s\r\n", &buf[1]);
 
 	if (message[0] != '\0')
-		write(irc, message, strlen(message));
+		WRITE(irc, message);
 }
 
 static void proc_server_cmd(char *buf) {
@@ -340,7 +382,7 @@ static void proc_server_cmd(char *buf) {
 		return;
 	} else if(!strncmp("PING", argv[TOK_CMD], 5)) {
 		snprintf(message, PIPE_BUF, "PONG %s\r\n", argv[TOK_TEXT]);
-		write(irc, message, strlen(message));
+		WRITE(irc, message);
 		return;
 	} else if(!argv[TOK_NICKSRV] || !argv[TOK_USER]) {	/* server command */
 		snprintf(message, PIPE_BUF, "%s%s", argv[TOK_ARG] ? argv[TOK_ARG] : "", argv[TOK_TEXT] ? argv[TOK_TEXT] : "");
@@ -378,11 +420,11 @@ static void proc_server_cmd(char *buf) {
 		print_out(argv[TOK_CHAN], message);
 }
 
-static int read_line(int fd, size_t res_len, char *buf) {
+static int read_line(int fd, size_t res_len, char *buf, size_t from_srv) {
 	size_t i = 0;
 	char c = 0;
 	do {
-		if(read(fd, &c, sizeof(char)) != sizeof(char))
+		if(READ(fd, &c, sizeof(char)) != sizeof(char))
 			return -1;
 		buf[i++] = c;
 	}
@@ -393,7 +435,7 @@ static int read_line(int fd, size_t res_len, char *buf) {
 
 static void handle_channels_input(Channel *c) {
 	static char buf[PIPE_BUF];
-	if(read_line(c->fd, PIPE_BUF, buf) == -1) {
+	if(read_line(c->fd, PIPE_BUF, buf, 0) == -1) {
 		close(c->fd);
 		int fd = open_channel(c->name);
 		if(fd != -1)
@@ -407,7 +449,7 @@ static void handle_channels_input(Channel *c) {
 
 static void handle_server_output() {
 	static char buf[PIPE_BUF];
-	if(read_line(irc, PIPE_BUF, buf) == -1) {
+	if(read_line(irc->irc, PIPE_BUF, buf, 1) == -1) {
 		perror("ii: remote host closed connection");
 		exit(EXIT_FAILURE);
 	}
@@ -423,8 +465,8 @@ static void run() {
 
 	for(;;) {
 		FD_ZERO(&rd);
-		maxfd = irc;
-		FD_SET(irc, &rd);
+		maxfd = irc->irc;
+		FD_SET(irc->irc, &rd);
 		for(c = channels; c; c = c->next) {
 			if(maxfd < c->fd)
 				maxfd = c->fd;
@@ -444,10 +486,10 @@ static void run() {
 				print_out(NULL, "-!- ii shutting down: ping timeout");
 				exit(EXIT_FAILURE);
 			}
-			write(irc, ping_msg, strlen(ping_msg));
+			WRITE(irc, ping_msg);
 			continue;
 		}
-		if(FD_ISSET(irc, &rd)) {
+		if(FD_ISSET(irc->irc, &rd)) {
 			handle_server_output();
 			last_response = time(NULL);
 		}
@@ -461,10 +503,11 @@ int main(int argc, char *argv[]) {
 	int i;
 	unsigned short port = SERVER_PORT;
 	char *key = NULL, *fullname = NULL, *dir = NULL;
-	char prefix[_POSIX_PATH_MAX] = "irc";
+	char prefix[_POSIX_PATH_MAX] = "irc", *pmsg = message + 17;
 
 	for(i = 1; (i + 1 < argc) && (argv[i][0] == '-'); i++) {
 		switch (argv[i][1]) {
+			case 'e': use_ssl = 1; break;
 			case 'i': snprintf(prefix,sizeof(prefix),"%s", argv[++i]); break;
 			case 's': host = argv[++i]; break;
 			case 'p': port = strtol(argv[++i], NULL, 10); break;
@@ -476,6 +519,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	if(i != argc) usage();
+	if(use_ssl) port = port == SERVER_PORT ? SSL_SERVER_PORT : port;
 	irc = tcpopen(port);
 	if(!snprintf(path, sizeof(path), "%s/%s", prefix, dir ? dir : host)) {
 		fprintf(stderr, "%s", "ii: path to irc directory too long\n");
@@ -485,6 +529,17 @@ int main(int argc, char *argv[]) {
 
 	add_channel(""); /* master channel */
 	login(key, fullname);
+
+	if (use_ssl) {
+		snprintf(message, PIPE_BUF, "MD5 Fingerprint: ");
+		for(i = 0; strlen(message) < PIPE_BUF && i < fp_len; i++) {
+			snprintf(pmsg, PIPE_BUF, i > 0 ? ":%02X" : "%02X", fp[i]);
+			if(i > 0) pmsg += 3;
+			else pmsg += 2;
+		}
+		print_out(NULL, message);
+	}
+
 	run();
 
 	return 0;

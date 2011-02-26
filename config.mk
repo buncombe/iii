@@ -24,7 +24,7 @@ SSLEEP		?= 300
 
 # Includes and libs:
 INCLUDES	+= -I. -I${INCDIR} -I/usr/include
-LIBS		+= -L${LIBDIR} -L/usr/lib -lc
+LIBS		+= -L${LIBDIR} -L/usr/lib -lc -lssl -lcrypto
 # Uncomment and comment the two above variables for compiling on Solaris:
 #LIBS		+= -L${LIBDIR} -L/usr/lib -lc -lsocket -lnsl
 #CFLAGS		+= -g ${INCLUDES} -DVERSION=\"${VERSION}\" \
