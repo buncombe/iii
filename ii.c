@@ -26,7 +26,6 @@
 #endif
 #define PING_TIMEOUT 300
 #define SERVER_PORT 6667
-#define SSL_SERVER_PORT 6697
 #define IS_CHANNEL(s) (((s)[0]=='#')||((s)[0]=='&')||((s)[0]=='+')||((s)[0]=='!'))
 #ifdef HAVE_SSL
 #define SSL_SERVER_PORT 6697
@@ -597,6 +596,5 @@ int main(int argc, char *argv[]) {
 	}
 #endif
 	run();
-
 	return 0;
 }
