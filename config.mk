@@ -25,13 +25,19 @@ SSLEEP		?= 300
 # Includes and libs:
 INCLUDES	+= -I. -I${INCDIR} -I/usr/include
 LIBS		+= -L${LIBDIR} -L/usr/lib -lc -lssl -lcrypto
-# Uncomment and comment the two above variables for compiling on Solaris:
-#LIBS		+= -L${LIBDIR} -L/usr/lib -lc -lsocket -lnsl
-#CFLAGS		+= -g ${INCLUDES} -DVERSION=\"${VERSION}\" \
-#    -DEXECUTABLE=\"${EXECUTABLE}\" -DSSLEEP=${SSLEEP}
 
 # Compiler flags:
 CC		?= cc
 CFLAGS		+= -g -O0 -W -Wall ${INCLUDES} -DVERSION=\"${VERSION}\" \
-    -DEXECUTABLE=\"${EXECUTABLE}\" -DSSLEEP=${SSLEEP}
+    -DEXECUTABLE=\"${EXECUTABLE}\" -DSSLEEP=${SSLEEP} -DHAVE_SSL
 LDFLAGS		+= ${LIBS}
+
+# Uncomment for compiling on Solaris:
+#LIBS		= -L${LIBDIR} -L/usr/lib -lc -lsocket -lnsl -lssl -lcrypto
+#CFLAGS		= -g ${INCLUDES} -DVERSION=\"${VERSION}\" \
+#    -DEXECUTABLE=\"${EXECUTABLE}\" -DSSLEEP=${SSLEEP} -DHAVE_SSL
+
+# Uncomment to disable SSL support in ii:
+#LIBS		= -L${LIBDIR} -L/usr/lib -lc
+#CFLAGS		= -g -O0 -W -Wall ${INCLUDES} -DVERSION=\"${VERSION}\" \
+#    -DEXECUTABLE=\"${EXECUTABLE}\" -DSSLEEP=${SSLEEP}
