@@ -22,8 +22,9 @@
 is a minimalistic FIFO and file system based IRC client.
 Upon connection, it creates an IRC directory
 .Ar prefix
-which contains the server directory that can be overridden by
-.Ar directory .
+which contains the server directory (its name can be overridden by
+.Ar directory
+).
 Beyond the path, inside the server directory, there are channel and nickname
 directories together with a FIFO file named "ii" and a regular one called
 "out".
@@ -47,7 +48,7 @@ the file is in use by the current instance of
 For more information about available commands, see further down in this
 section.
 .Pp
-The arguments are as follows, with the default value enclosed within brackets:
+The arguments are as follows, with the default values enclosed within brackets:
 .Bl -tag -width Ds
 .It Fl d Ar directory
 Overrides the
@@ -72,7 +73,7 @@ If this is not a desired side-effect, then simply use a query to submit the
 password.
 .It Fl n Ar nickname
 The used nickname during the IRC session.
-This is of course also possible to change in a later stage by querying the
+This is of course also possible to change later on by querying the
 server using the
 .Cm /n
 command.
@@ -122,21 +123,22 @@ This must be sent to the "in" FIFO file located within the channel directory.
 Change the nick to
 .Ar nickname .
 .It Cm /t [#channel] [topic]
-Change the topic of the specified channel, or the current one if omitted, to
+Change the topic of the specified channel, or the current one if omitted (must
+then be sent to an "in" file inside a channel directory), to
 .Ar topic .
 If
 .Ar topic
-is skipped, the server will report what the current topic is to the "out" file
-which is in the server directory.
+is skipped, the server will report what the topic is to the "out" file that is
+located in the server directory.
 .El
 .Sh FILES
 .Bl -tag -width Ds
 .It Cm in
 The FIFO files "in" are used to communicate with the server.
 .It Cm irc
-Inside this directory is the server directory and within the last one, there
-are channel and nickname directories together with a FIFO file named "ii" and a
-regular one called "out".
+Inside this directory is the server directory and within the last montioned
+one, there are channel and nickname directories together with a FIFO file named
+"ii" and a regular one called "out".
 These two latter files do also occur inside each channel and nickname
 directory, which themselves are created upon joining a channel or opening of a
 private conversation.
