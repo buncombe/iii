@@ -11,6 +11,7 @@
 .Sh SYNOPSIS
 .Nm
 .Op Fl d Ar directory
+.Op Fl e
 .Op Fl f Ar realname
 .Op Fl i Ar prefix
 .Op Fl k Ar password
@@ -56,6 +57,22 @@ Overrides the
 part within the directory structure that
 .Nm
 creates.
+.It Fl e
+Connect to the
+.Ar servername
+using SSLv2/SSLv3/TLSv1 encryption.
+The default
+.Ar port
+in this mode is 6697.
+.Pp
+Support for encryption can be disabled at compile time, check config.mk for
+further information on disabling it. To see whether the
+.Nm
+binary supports encryption, give it the
+.Fl h
+option and, in case support is enabled, the
+.Fl e
+flag should show up in the list of available arguments.
 .It Fl f Ar realname
 The real name that is to be associated with the
 .Ar nickname .
@@ -153,7 +170,8 @@ These files carry the server messages.
 .El
 .Sh SEE ALSO
 .Xr echo 1 ,
-.Xr tail 1
+.Xr tail 1 ,
+.Xr SSL_get_peer_certificate 3
 .Sh AUTHORS
 .An Copyright \(co 2005-2006 by Anselm R. Garbe <garbeam (at) gmail (dot) com>
 .An Copyright \(co 2005-2008 by Nico Golde <nico (at) ngolde (dot) de>
@@ -168,3 +186,13 @@ will receive the
 However, the server will, in these cases, report when a specific user is not
 available, so a check in the "out" file, in the server directory, works as a
 solution to this problem.
+.Pp
+No verification of the X509 certificate is made when encryption (
+.Fl e
+flag is passed to
+.Nm
+) is used.
+However, the MD5 fingerprint is printed to the "out" file that is located
+inside the server directory.
+In other words, it is possible to compare the fingerprint of the used
+certificate with the fingerprint of the known and correct one.
