@@ -21,6 +21,7 @@
 #endif
 #define PING_TIMEOUT 300
 #define SERVER_PORT 6667
+#define IS_CHANNEL(s) (((s)[0]=='#')||((s)[0]=='&')||((s)[0]=='+')||((s)[0]=='!'))
 enum { TOK_NICKSRV = 0, TOK_USER, TOK_CMD, TOK_CHAN, TOK_ARG, TOK_TEXT, TOK_LAST };
 
 typedef struct Channel Channel;
@@ -225,7 +226,7 @@ static void proc_channels_privmsg(char *channel, char *buf) {
 static void proc_channels_input(Channel *c, char *buf) {
 	char *p = NULL;
 
-	if(buf[0] != '/' && buf[0] != 0) {
+	if(buf[0] && buf[0] != '/') {
 		proc_channels_privmsg(c->name, buf);
 		return;
 	}
@@ -235,21 +236,19 @@ static void proc_channels_input(Channel *c, char *buf) {
 			if(buf[3] == ' ' || buf[3] == '\0') return;
 			p = strchr(&buf[3], ' ');
 			if(p) *p = 0;
-			if((buf[3]=='#')||(buf[3]=='&')||(buf[3]=='+')||(buf[3]=='!')){
+			if(IS_CHANNEL(&buf[3])){
 				if(p && strlen(p + 1)) snprintf(message, PIPE_BUF, "JOIN %s %s\r\n", &buf[3], p + 1); /* password protected channel */
 				else snprintf(message, PIPE_BUF, "JOIN %s\r\n", &buf[3]);
 				add_channel(&buf[3]);
 			}
-			else {
-				if(p && strlen(p + 1)){
-					add_channel(&buf[3]);
-					proc_channels_privmsg(&buf[3], p + 1);
-				}
+			else if(p && strlen(p + 1)) {
+				add_channel(&buf[3]);
+				proc_channels_privmsg(&buf[3], p + 1);
 				return;
 			}
 			break;
 		case 't':
-			if((buf[3]=='#')||(buf[3]=='&')||(buf[3]=='+')||(buf[3]=='!')){
+			if(IS_CHANNEL(&buf[3])){
 				p = strchr(&buf[3], ' ');
 				if(p) *p = 0;
 				if(p && strlen(p + 1)) snprintf(message, PIPE_BUF, "TOPIC %s :%s\r\n", &buf[3], p + 1);
@@ -278,7 +277,7 @@ static void proc_channels_input(Channel *c, char *buf) {
 			if(c->name[0] == 0) return;
 			if(strlen(buf)>3) snprintf(message, PIPE_BUF, "PART %s :%s\r\n", c->name, &buf[3]);
 			else snprintf(message, PIPE_BUF, "PART %s\r\n", c->name);
-			write(irc, message, strlen(message));
+			if(IS_CHANNEL(c->name)) write(irc, message, strlen(message));
 			close(c->fd);
 			rm_channel(c);
 			return;
@@ -464,8 +463,6 @@ int main(int argc, char *argv[]) {
 	char *key = NULL, *fullname = NULL, *dir = NULL;
 	char prefix[_POSIX_PATH_MAX] = "irc";
 
-	if (argc <= 1 || (argc == 2 && argv[1][0] == '-' && argv[1][1] == 'h')) usage();
-
 	for(i = 1; (i + 1 < argc) && (argv[i][0] == '-'); i++) {
 		switch (argv[i][1]) {
 			case 'i': snprintf(prefix,sizeof(prefix),"%s", argv[++i]); break;
@@ -478,6 +475,7 @@ int main(int argc, char *argv[]) {
 			default: usage(); break;
 		}
 	}
+	if(i != argc) usage();
 	irc = tcpopen(port);
 	if(!snprintf(path, sizeof(path), "%s/%s", prefix, dir ? dir : host)) {
 		fprintf(stderr, "%s", "ii: path to irc directory too long\n");
