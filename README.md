@@ -16,7 +16,7 @@ file in the same directory level.
 
 The idea of this file system structure, is to be able to communicate with an
 IRC server using basic command line tools. For example, if the desired action
-is to join a channel, the command echo /j #channel > in will do the trick no
+is to join a channel, the command `echo /j #channel > in` will do the trick no
 matter which "in" FIFO file it is addressed to, as long as the file is in use
 by the current instance of ii.
 
@@ -50,7 +50,7 @@ completion if you have written the nick in the past.
 Thanks to Matthias Kopfermann for this hint.
 
 You can find an example of how this nested environment could look like on:
-http://nion.modprobe.de/blog/archives/440-Using-the-ii-irc-client.html
+[http://nion.modprobe.de/blog/archives/440-Using-the-ii-irc-client.html][nion]
 
 Configuration
 -------------
@@ -59,8 +59,9 @@ No configuration is needed.
 Changelog
 ---------
 Since I missed the chance to add a proper changelog right from the beginning,
-please have a look at the commit messages on http://hg.suckless.org/ii/shortlog
-they are fairly descriptive on releases prior to 1.2.
+please have a look at the commit messages on
+[http://hg.suckless.org/ii/shortlog][hg] they are fairly descriptive on
+releases prior to 1.2.
 
 Contact
 -------
@@ -68,3 +69,6 @@ If you want to contact the developers, just write an e-mail to
 ii (at) modprobe (dot) de.
 
 -- Nico Golde, Anselm R. Garbe
+
+[nion]: http://nion.modprobe.de/blog/archives/440-Using-the-ii-irc-client.html
+[hg]: http://hg.suckless.org/ii/shortlog
