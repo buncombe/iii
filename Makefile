@@ -53,7 +53,7 @@ dist: all format
 	@mkdir -p ${PROJECT}-${VERSION}/${DOCSRC}
 	@cp -R query.sh Makefile CHANGES README.md LICENSE config.mk ${CSRCS} \
 	    ${PROJECT}-${VERSION}
-	@cp -R ${DOCSRC}FAQ ${MANSRCS} ${MANSRCS:.in.1=.1.txt} \
+	@cp -R ${DOCSRC}FAQ.md ${MANSRCS} ${MANSRCS:.in.1=.1.txt} \
 	    ${MANSRCS:.in.1=.1.html} ${PROJECT}-${VERSION}/${DOCSRC}
 	@tar -cf ${PROJECT}-${VERSION}.tar ${PROJECT}-${VERSION}
 	@gzip ${PROJECT}-${VERSION}.tar
@@ -66,7 +66,7 @@ install: all
 	@mkdir -p ${DESTDIR}/${MAN1DIR}
 
 	@install -d ${DESTDIR}/${BINDIR} ${DESTDIR}/${MAN1DIR}
-	@install -m 644 CHANGES README.md query.sh ${DOCSRC}FAQ LICENSE \
+	@install -m 644 CHANGES README.md query.sh ${DOCSRC}FAQ.md LICENSE \
 	    ${DESTDIR}/${DOCDIR}
 	@install -m 775 ${CSRCS:.c=} ${DESTDIR}/${BINDIR}
 	@install -m 444 ${MANSRCS:.in.1=.1} ${DESTDIR}/${MAN1DIR}
