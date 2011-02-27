@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="resource-type" content="document"><title>WRAPPER(1)</title>
+</head>
+<body><div class="body"><table class="header" style="width:100%;" summary="header"><tr><td style="width:10%;">WRAPPER(1)</td>
+<td style="text-align:center;white-space:nowrap;width:80%;">OpenBSD Reference Manual</td>
+<td style="text-align:right;width:10%;">WRAPPER(1)</td>
+</tr>
+</table>
+<div class="sec-block" style="margin-top: 1.00em;"><div class="sec-head" id="x4e414d45">NAME</div>
+<div class="sec-body" style="margin-left: 5.00ex;"><span class="name">wrapper</span> &#8212; <span class="desc-body">wraps <a class="link-man">ii(1)</a> and allows execution on connect</span></div>
+</div>
+<div class="sec-block" style="margin-top: 1.00em;"><div class="sec-head" id="x53594e4f50534953">SYNOPSIS</div>
+<div class="sec-body" style="margin-left: 5.00ex;"><div style="clear:both;padding-left: 7.00ex;"><div style="float:left;min-width: 7.00ex;margin-left: -7.00ex;">wrapper</div>
+<div style="margin-left: 2.00ex;">&#91;<span class="opt"><span class="flag">&#45;i</span> <span class="arg">ii arg</span></span>&#93; &#91;<span class="opt"><span class="flag">&#45;s</span> <span class="arg">sh arg</span></span>&#93; <span class="flag">&#45;-</span> <span class="arg">host1 port1</span> &#91;<span class="opt"><span class="arg">host2 port2 ...</span></span>&#93;</div>
+</div>
+</div>
+</div>
+<div class="sec-block" style="margin-top: 1.00em;"><div class="sec-head" id="x4445534352495054494f4e">DESCRIPTION</div>
+<div class="sec-body" style="margin-left: 5.00ex;">The <span class="name">wrapper</span> utility randomly selects one pair of <span class="arg">hosts</span> and <span class="arg">ports</span> before it passes the pair as arguments to <a class="link-man">ii(1)</a> using <a class="link-man">system(3)</a>. Additional arguments can be given to <a class="link-man">ii(1)</a> by specifying them in <span class="arg">ii arg</span>. In case <a class="link-man">ii(1)</a> exits, this procedure is done all over again.<div style="height: 1.00em;">&#160;</div>
+If <span class="arg">sh arg</span> is given, <span class="name">wrapper</span> forks and then initializes <a class="link-man">ii(1)</a>. The child process sleeps for 300 seconds (default) before passing <span class="arg">sh arg</span> to <a class="link-man">system(3)</a>. This is useful in order to, for example, authenticate with NickServ or rejoin IRC channels after a disconnection.</div>
+</div>
+<div class="sec-block" style="margin-top: 1.00em;"><div class="sec-head" id="x534545x20x414c534f">SEE ALSO</div>
+<div class="sec-body" style="margin-left: 5.00ex;"><a class="link-man">ii(1)</a>, <a class="link-man">sh(1)</a>, <a class="link-man">fork(3)</a>, <a class="link-man">sleep(3)</a>, <a class="link-man">system(3)</a></div>
+</div>
+<div class="sec-block" style="margin-top: 1.00em;"><div class="sec-head" id="x484953544f5259">HISTORY</div>
+<div class="sec-body" style="margin-left: 5.00ex;">The development of <span class="name">wrapper</span> began in the early 2011's with the first version released on January 9, 2011 via <a class="link-ext" href="http://repo.or.cz/w/iii.git">http://repo.or.cz/w/iii.git</a>.</div>
+</div>
+<div class="sec-block" style="margin-top: 1.00em;margin-bottom: 1.00em;"><div class="sec-head" id="x43415645415453">CAVEATS</div>
+<div class="sec-body" style="margin-left: 5.00ex;">Notice that <a class="link-man">sh(1)</a> meta-characters must be escaped in both <span class="arg">ii arg</span> and <span class="arg">sh arg</span> and that the <span class="flag">&#45;s</span> and <span class="flag">&#45;p</span> flags of <a class="link-man">ii(1)</a> have no effect in <span class="arg">ii arg</span>.<div style="height: 1.00em;">&#160;</div>
+To prevent <a class="link-man">ii(1)</a> from choosing different server directories as connections are made to various <span class="arg">hosts</span>, pass it the <span class="flag">&#45;d</span> flag. The argument of the flag will override this part of the file path.<div style="height: 1.00em;">&#160;</div>
+As <span class="name">wrapper</span> changes the working directory to "/", all file paths must be given relative to that directory.</div>
+</div>
+<table class="footer" style="width:100%;" summary="footer"><tr><td style="width:50%;">February 27, 2011</td>
+<td style="width:50%;text-align:right;">OpenBSD 4.8</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

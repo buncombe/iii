@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="resource-type" content="document"><title>II(1)</title>
+</head>
+<body><div class="body"><table class="header" style="width:100%;" summary="header"><tr><td style="width:10%;">II(1)</td>
+<td style="text-align:center;white-space:nowrap;width:80%;">OpenBSD Reference Manual</td>
+<td style="text-align:right;width:10%;">II(1)</td>
+</tr>
+</table>
+<div class="sec-block" style="margin-top: 1.00em;"><div class="sec-head" id="x4e414d45">NAME</div>
+<div class="sec-body" style="margin-left: 5.00ex;"><span class="name">ii</span> &#8212; <span class="desc-body">IRC it or IRC improved</span></div>
+</div>
+<div class="sec-block" style="margin-top: 1.00em;"><div class="sec-head" id="x53594e4f50534953">SYNOPSIS</div>
+<div class="sec-body" style="margin-left: 5.00ex;"><div style="clear:both;padding-left: 2.00ex;"><div style="float:left;min-width: 2.00ex;margin-left: -2.00ex;">ii</div>
+<div style="margin-left: 2.00ex;">&#91;<span class="opt"><span class="flag">&#45;d</span> <span class="arg">directory</span></span>&#93; &#91;<span class="opt"><span class="flag">&#45;e</span></span>&#93; &#91;<span class="opt"><span class="flag">&#45;f</span> <span class="arg">realname</span></span>&#93; &#91;<span class="opt"><span class="flag">&#45;i</span> <span class="arg">prefix</span></span>&#93; &#91;<span class="opt"><span class="flag">&#45;k</span> <span class="arg">password</span></span>&#93; &#91;<span class="opt"><span class="flag">&#45;n</span> <span class="arg">nickname</span></span>&#93; &#91;<span class="opt"><span class="flag">&#45;p</span> <span class="arg">port</span></span>&#93; &#91;<span class="opt"><span class="flag">&#45;s</span> <span class="arg">servername</span></span>&#93;</div>
+</div>
+</div>
+</div>
+<div class="sec-block" style="margin-top: 1.00em;"><div class="sec-head" id="x4445534352495054494f4e">DESCRIPTION</div>
+<div class="sec-body" style="margin-left: 5.00ex;"><span class="name">ii</span> is a minimalistic FIFO and file system based IRC client. Upon connection, it creates an IRC directory <span class="arg">prefix</span> which contains the server directory (its name can be overridden by <span class="arg">directory</span> ). Beyond the path, inside the server directory, there are channel and nickname directories together with a FIFO file named "in" and a regular one called "out". These two latter files do also occur inside each channel and nickname directory, which themselves are created upon joining a channel or opening of a private conversation.<div style="height: 1.00em;">&#160;</div>
+The FIFO files "in" are used to communicate with the server, while the regular "out" files carry the server messages. If the data sent to an "in" file is not an IRC command, in other words not starting with a slash "/", it will be interpreted as a regular message (PRIVMSG) which later pops up in the "out" file in the same directory level.<div style="height: 1.00em;">&#160;</div>
+The idea of this file system structure, is to be able to communicate with an IRC server using basic command line tools. For example, if the desired action is to join a channel, the command <span class="flag">echo /j #channel &gt; in</span> will do the trick no matter which "in" FIFO file it is addressed to, as long as the file is in use by the current instance of <span class="name">ii</span>. For more information about available commands, see further down in this section.<div style="height: 1.00em;">&#160;</div>
+The arguments are as follows, with the default values enclosed within brackets:<div style="clear:both;padding-left: 6.00ex;padding-top: 1.00em;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">&#45;d</span> <span class="arg">directory</span></div>
+<div style="margin-left: 2.00ex;">Overrides the <span class="arg">servername</span> part within the directory structure that <span class="name">ii</span> creates.</div>
+</div>
+<div style="clear:both;padding-left: 6.00ex;padding-top: 1.00em;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">&#45;e</span></div>
+<div style="margin-left: 2.00ex;">Connect to the <span class="arg">servername</span> using SSLv2/SSLv3/TLSv1 encryption. The default <span class="arg">port</span> in this mode is 6697.<div style="height: 1.00em;">&#160;</div>
+Support for encryption can be disabled at compile time, check config.mk for further information on disabling it. To see whether the <span class="name">ii</span> binary supports encryption, give it the <span class="flag">&#45;h</span> option and, in case support is enabled, the <span class="flag">&#45;e</span> flag should show up in the list of available arguments.</div>
+</div>
+<div style="clear:both;padding-left: 6.00ex;padding-top: 1.00em;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">&#45;f</span> <span class="arg">realname</span></div>
+<div style="margin-left: 2.00ex;">The real name that is to be associated with the <span class="arg">nickname</span>.</div>
+</div>
+<div style="clear:both;padding-left: 6.00ex;padding-top: 1.00em;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">&#45;i</span> <span class="arg">prefix</span></div>
+<div style="margin-left: 2.00ex;">The directory in which <span class="name">ii</span> will create its server directory. (irc)</div>
+</div>
+<div style="clear:both;padding-left: 6.00ex;padding-top: 1.00em;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">&#45;k</span> <span class="arg">password</span></div>
+<div style="margin-left: 2.00ex;">A password used to authenticate the <span class="arg">nickname</span> with the server. Be aware of the problem that it will be visible in the process list. If this is not a desired side-effect, then simply use a query to submit the password.</div>
+</div>
+<div style="clear:both;padding-left: 6.00ex;padding-top: 1.00em;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">&#45;n</span> <span class="arg">nickname</span></div>
+<div style="margin-left: 2.00ex;">The used nickname during the IRC session. This is of course also possible to change later on by querying the server using the <span class="flag">/n</span> command. (anonymous)</div>
+</div>
+<div style="clear:both;padding-left: 6.00ex;padding-top: 1.00em;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">&#45;p</span> <span class="arg">port</span></div>
+<div style="margin-left: 2.00ex;">The port that <span class="name">ii</span> will connect to on the specific <span class="arg">servername</span>. (6667)</div>
+</div>
+<div style="clear:both;padding-left: 6.00ex;padding-top: 1.00em;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">&#45;s</span> <span class="arg">servername</span></div>
+<div style="margin-left: 2.00ex;">The server to which <span class="name">ii</span> will connect. (irc.freenode.net)</div>
+</div>
+<div style="height: 1.00em;">&#160;</div>
+The commands that <span class="name">ii</span> understands are as follows:<div style="clear:both;padding-left: 6.00ex;padding-top: 1.00em;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">/a [message]</span></div>
+<div style="margin-left: 2.00ex;">Used in order to mark oneself as away. The server will send the <span class="arg">message</span> automatically in reply to a PRIVMSG directed at the user (you). If <span class="arg">message</span> is omitted, the away status is removed.</div>
+</div>
+<div style="clear:both;padding-left: 6.00ex;padding-top: 1.00em;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">/j #channel/nickname [message]/message</span></div>
+<div style="margin-left: 2.00ex;">Join a channel or open a private conversation with another user having the nick <span class="arg">nickname</span>. If the purpose is to join a channel, then the <span class="arg">message</span> is meaning the key that is needed in order to join the password protected channel. When opening a private conversation, then the <span class="arg">message</span> (compulsory) is sent to the <span class="arg">nickname</span> as a PRIVMSG.</div>
+</div>
+<div style="clear:both;padding-left: 6.00ex;padding-top: 1.00em;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">/l [comment]</span></div>
+<div style="margin-left: 2.00ex;">Causes the user to leave the current channel with an optional <span class="arg">comment</span>. This must be sent to the "in" FIFO file located within the channel directory.</div>
+</div>
+<div style="clear:both;padding-left: 6.00ex;padding-top: 1.00em;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">/n nickname</span></div>
+<div style="margin-left: 2.00ex;">Change the nick to <span class="arg">nickname</span>.</div>
+</div>
+<div style="clear:both;padding-left: 6.00ex;padding-top: 1.00em;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">/t [#channel] [topic]</span></div>
+<div style="margin-left: 2.00ex;">Change the topic of the specified channel, or the current one if omitted (must then be sent to an "in" file inside a channel directory), to <span class="arg">topic</span>. If <span class="arg">topic</span> is skipped, the server will report what the topic is to the "out" file that is located in the server directory.</div>
+</div>
+</div>
+</div>
+<div class="sec-block" style="margin-top: 1.00em;"><div class="sec-head" id="x46494c4553">FILES</div>
+<div class="sec-body" style="margin-left: 5.00ex;"><div style="clear:both;padding-left: 6.00ex;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">in</span></div>
+<div style="margin-left: 2.00ex;">The FIFO files "in" are used to communicate with the server.</div>
+</div>
+<div style="clear:both;padding-left: 6.00ex;padding-top: 1.00em;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">irc</span></div>
+<div style="margin-left: 2.00ex;">Inside this directory is the server directory and within the last mentioned one, there are channel and nickname directories together with a FIFO file named "in" and a regular one called "out". These two latter files do also occur inside each channel and nickname directory, which themselves are created upon joining a channel or opening of a private conversation.<div style="height: 1.00em;">&#160;</div>
+It is possible to override <span class="flag">irc</span> by specifying the <span class="arg">prefix</span> argument.</div>
+</div>
+<div style="clear:both;padding-left: 6.00ex;padding-top: 1.00em;"><div style="min-width: 6.00ex;margin-left: -6.00ex;float:left;margin-right: 1.00ex;"><span class="flag">out</span></div>
+<div style="margin-left: 2.00ex;">These files carry the server messages.</div>
+</div>
+</div>
+</div>
+<div class="sec-block" style="margin-top: 1.00em;"><div class="sec-head" id="x534545x20x414c534f">SEE ALSO</div>
+<div class="sec-body" style="margin-left: 5.00ex;"><a class="link-man">echo(1)</a>, <a class="link-man">tail(1)</a>, <a class="link-man">SSL_get_peer_certificate(3)</a></div>
+</div>
+<div class="sec-block" style="margin-top: 1.00em;"><div class="sec-head" id="x415554484f5253">AUTHORS</div>
+<div class="sec-body" style="margin-left: 5.00ex;"><span class="author">Copyright &#169; 2005-2006 by Anselm R. Garbe &lt;garbeam (at) gmail (dot) com&gt;</span> <span class="author">Copyright &#169; 2005-2008 by Nico Golde &lt;nico (at) ngolde (dot) de&gt;</span></div>
+</div>
+<div class="sec-block" style="margin-top: 1.00em;margin-bottom: 1.00em;"><div class="sec-head" id="x43415645415453">CAVEATS</div>
+<div class="sec-body" style="margin-left: 5.00ex;"><span class="name">ii</span> cannot tell whether a specific user exists when the <span class="flag">/j</span> command is used to open a private conversation. This means that it always succeeds if the syntax is correct, even if nobody will receive the <span class="arg">message</span>. However, the server will, in these cases, report when a specific user is not available, so a check in the "out" file, in the server directory, works as a solution to this problem.<div style="height: 1.00em;">&#160;</div>
+No verification of the X509 certificate is made when encryption ( <span class="flag">&#45;e</span> flag is passed to <span class="name">ii</span> ) is used. However, the MD5 fingerprint is printed to the "out" file that is located inside the server directory. In other words, it is possible to compare the fingerprint of the used certificate with the fingerprint of the known and correct one.</div>
+</div>
+<table class="footer" style="width:100%;" summary="footer"><tr><td style="width:50%;">February 27, 2011</td>
+<td style="width:50%;text-align:right;">OpenBSD 4.8</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

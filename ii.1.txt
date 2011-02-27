@@ -1,0 +1,139 @@
+II(1)			   OpenBSD Reference Manual			 II(1)
+
+NAME
+     ii - IRC it or IRC improved
+
+SYNOPSIS
+     ii [-d directory] [-e] [-f realname] [-i prefix] [-k password] [-n
+	nickname] [-p port] [-s servername]
+
+DESCRIPTION
+     ii is a minimalistic FIFO and file system based IRC client.  Upon
+     connection, it creates an IRC directory prefix which contains the server
+     directory (its name can be overridden by directory ).  Beyond the path,
+     inside the server directory, there are channel and nickname directories
+     together with a FIFO file named "in" and a regular one called "out".
+     These two latter files do also occur inside each channel and nickname
+     directory, which themselves are created upon joining a channel or opening
+     of a private conversation.
+
+     The FIFO files "in" are used to communicate with the server, while the
+     regular "out" files carry the server messages.  If the data sent to an
+     "in" file is not an IRC command, in other words not starting with a slash
+     "/", it will be interpreted as a regular message (PRIVMSG) which later
+     pops up in the "out" file in the same directory level.
+
+     The idea of this file system structure, is to be able to communicate with
+     an IRC server using basic command line tools.  For example, if the
+     desired action is to join a channel, the command echo /j #channel > in
+     will do the trick no matter which "in" FIFO file it is addressed to, as
+     long as the file is in use by the current instance of ii.	For more
+     information about available commands, see further down in this section.
+
+     The arguments are as follows, with the default values enclosed within
+     brackets:
+
+     -d directory
+	     Overrides the servername part within the directory structure that
+	     ii creates.
+
+     -e	     Connect to the servername using SSLv2/SSLv3/TLSv1 encryption.
+	     The default port in this mode is 6697.
+
+	     Support for encryption can be disabled at compile time, check
+	     config.mk for further information on disabling it. To see whether
+	     the ii binary supports encryption, give it the -h option and, in
+	     case support is enabled, the -e flag should show up in the list
+	     of available arguments.
+
+     -f realname
+	     The real name that is to be associated with the nickname.
+
+     -i prefix
+	     The directory in which ii will create its server directory.
+	     (irc)
+
+     -k password
+	     A password used to authenticate the nickname with the server. Be
+	     aware of the problem that it will be visible in the process list.
+	     If this is not a desired side-effect, then simply use a query to
+	     submit the password.
+
+     -n nickname
+	     The used nickname during the IRC session.	This is of course also
+	     possible to change later on by querying the server using the /n
+	     command.  (anonymous)
+
+     -p port
+	     The port that ii will connect to on the specific servername.
+	     (6667)
+
+     -s servername
+	     The server to which ii will connect.  (irc.freenode.net)
+
+     The commands that ii understands are as follows:
+
+     /a [message]
+	     Used in order to mark oneself as away.  The server will send the
+	     message automatically in reply to a PRIVMSG directed at the user
+	     (you).  If message is omitted, the away status is removed.
+
+     /j #channel/nickname [message]/message
+	     Join a channel or open a private conversation with another user
+	     having the nick nickname.	If the purpose is to join a channel,
+	     then the message is meaning the key that is needed in order to
+	     join the password protected channel.  When opening a private
+	     conversation, then the message (compulsory) is sent to the
+	     nickname as a PRIVMSG.
+
+     /l [comment]
+	     Causes the user to leave the current channel with an optional
+	     comment.  This must be sent to the "in" FIFO file located within
+	     the channel directory.
+
+     /n nickname
+	     Change the nick to nickname.
+
+     /t [#channel] [topic]
+	     Change the topic of the specified channel, or the current one if
+	     omitted (must then be sent to an "in" file inside a channel
+	     directory), to topic.  If topic is skipped, the server will
+	     report what the topic is to the "out" file that is located in the
+	     server directory.
+
+FILES
+     in	     The FIFO files "in" are used to communicate with the server.
+
+     irc     Inside this directory is the server directory and within the last
+	     mentioned one, there are channel and nickname directories
+	     together with a FIFO file named "in" and a regular one called
+	     "out".  These two latter files do also occur inside each channel
+	     and nickname directory, which themselves are created upon joining
+	     a channel or opening of a private conversation.
+
+	     It is possible to override irc by specifying the prefix argument.
+
+     out     These files carry the server messages.
+
+SEE ALSO
+     echo(1), tail(1), SSL_get_peer_certificate(3)
+
+AUTHORS
+     Copyright (C) 2005-2006 by Anselm R. Garbe <garbeam (at) gmail (dot) com>
+     Copyright (C) 2005-2008 by Nico Golde <nico (at) ngolde (dot) de>
+
+CAVEATS
+     ii cannot tell whether a specific user exists when the /j command is used
+     to open a private conversation.  This means that it always succeeds if
+     the syntax is correct, even if nobody will receive the message.  However,
+     the server will, in these cases, report when a specific user is not
+     available, so a check in the "out" file, in the server directory, works
+     as a solution to this problem.
+
+     No verification of the X509 certificate is made when encryption ( -e flag
+     is passed to ii ) is used.	 However, the MD5 fingerprint is printed to
+     the "out" file that is located inside the server directory.  In other
+     words, it is possible to compare the fingerprint of the used certificate
+     with the fingerprint of the known and correct one.
+
+OpenBSD 4.8		       February 27, 2011		   OpenBSD 4.8
