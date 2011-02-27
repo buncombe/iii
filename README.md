@@ -1,27 +1,32 @@
-ii & wrapper
-============
+ii - IRC it or IRC improved
+===========================
 
 Abstract
 --------
-ii is a minimalistic FIFO and file system based IRC client. Upon connection, it
-creates an IRC directory prefix which contains the server directory (its name
-can be overridden by directory). Beyond the path, inside the server directory,
-there are channel and nickname directories together with a FIFO file named "in"
-and a regular one called "out". These two latter files do also occur inside
-each channel and nickname directory, which themselves are created upon joining
-a channel or opening of a private conversation.
+An extract from the manpage ([txt][ii_man_txt] or [html][ii_man_html]):
 
-The FIFO files "in" are used to communicate with the server, while the regular
-"out" files carry the server messages. If the data sent to an "in" file is not
-an IRC command, in other words not starting with a slash "/", it will be
-interpreted as a regular message (PRIVMSG) which later pops up in the "out"
-file in the same directory level.
+> ii is a minimalistic FIFO and file system based IRC client. Upon connection,
+> it creates an IRC directory prefix which contains the server directory (its
+> name can be overridden by directory ). Beyond the path, inside the server
+> directory, there are channel and nickname directories together with a FIFO
+> file named "in" and a regular one called "out".  These two latter files do
+> also occur inside each channel and nickname directory, which themselves are
+> created upon joining a channel or opening of a private conversation.
+> 
+> The FIFO files "in" are used to communicate with the server, while the
+> regular "out" files carry the server messages. If the data sent to an "in"
+> file is not an IRC command, in other words not starting with a slash "/", it
+> will be interpreted as a regular message (PRIVMSG) which later pops up in the
+> "out" file in the same directory level.
+> 
+> The idea of this file system structure, is to be able to communicate with an
+> IRC server using basic command line tools. For example, if the desired action
+> is to join a channel, the command echo /j #channel > in will do the trick no
+> matter which "in" FIFO file it is addressed to, as long as the file is in use
+> by the current instance of ii.
 
-The idea of this file system structure, is to be able to communicate with an
-IRC server using basic command line tools. For example, if the desired action
-is to join a channel, the command `echo /j #channel > in` will do the trick no
-matter which "in" FIFO file it is addressed to, as long as the file is in use
-by the current instance of ii.
+For information about wrapper(1), consult its manpage ([txt][wrapper_man_txt]
+or [html][wrapper_man_html]).
 
 Installation
 ------------
@@ -75,3 +80,7 @@ ii (at) modprobe (dot) de.
 
 [nion]: http://nion.modprobe.de/blog/archives/440-Using-the-ii-irc-client.html
 [hg]: http://hg.suckless.org/ii/shortlog
+[ii_man_txt]: http://buncombe.github.com/iii/ii.1.txt
+[ii_man_html]: http://buncombe.github.com/iii/ii.1.html
+[wrapper_man_txt]: http://buncombe.github.com/iii/wrapper.1.txt
+[wrapper_man_html]: http://buncombe.github.com/iii/wrapper.1.html
