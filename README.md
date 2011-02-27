@@ -1,3 +1,6 @@
+ii & wrapper
+============
+
 Abstract
 --------
 ii is a minimalistic FIFO and file system based IRC client. Upon connection, it
