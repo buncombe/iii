@@ -3,7 +3,7 @@ Abstract
 ii is a minimalistic FIFO and file system based IRC client. Upon connection, it
 creates an IRC directory prefix which contains the server directory (its name
 can be overridden by directory). Beyond the path, inside the server directory,
-there are channel and nickname directories together with a FIFO file named "ii"
+there are channel and nickname directories together with a FIFO file named "in"
 and a regular one called "out". These two latter files do also occur inside
 each channel and nickname directory, which themselves are created upon joining
 a channel or opening of a private conversation.
@@ -22,26 +22,28 @@ by the current instance of ii.
 
 Installation
 ------------
-Edit config.mk to match your local setup. ii and wrapper are installed into
-/usr/local by default.
+Edit config.mk to match your local setup. ii(1) and wrapper(1) are installed
+into /usr/local by default.
 
-Afterwards, enter the following command to build and install ii and
-wrapper (if necessary, as root):
+Afterwards, enter the following command to build and install ii(1) and
+wrapper(1) (if necessary, as root):
 
-    $ make clean install
+	$ make clean install
 
-Running ii
-------------
+Running ii(1)
+-------------
 Simply invoke the 'ii' command with the arguments of your choice. For
-information about the available arguments, consult the manpage or pass ii the
-option "-h".
+information about the available arguments, consult the manpage or pass ii(1)
+the option "-h".
 
-To make ii a bit more comfortable, use it in combination with the multitail
-program and for example with vim. Run vim in the server directory and use
-key mappings like:
-map w1 :.w >> \#ii/in<cr>
-map w2 :.w >> \#wmii/in<cr>
-to post to channels.
+To make the use of ii(1) a bit more comfortable, use it in combination with the
+multitail(1) program and, for example, with vim(1). Run vim in the server
+directory and use key mappings like:
+
+	map w1 :.w >> \#ii/in<cr>
+	map w2 :.w >> \#wmii/in<cr>
+
+in order to post to channels.
 
 If you use the next editor line for a new posting, you can use ctrl-p for nick
 completion if you have written the nick in the past.
@@ -63,6 +65,6 @@ they are fairly descriptive on releases prior to 1.2.
 Contact
 -------
 If you want to contact the developers, just write an e-mail to
-ii (at) modprobe (dot) de
+ii (at) modprobe (dot) de.
 
 -- Nico Golde, Anselm R. Garbe

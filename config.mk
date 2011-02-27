@@ -17,11 +17,11 @@ DESTDIR		?=
 INCDIR		?= ${PREFIX}/include
 LIBDIR		?= ${PREFIX}/lib
 VERSION		?= 1.6
-# The ii executable that the wrapper program will use: 
+# The ii(1) executable that the wrapper(1) program will use: 
 II_EXEC		?= ii
-# Amount of seconds that it (generally) takes for ii to connect:
+# Amount of seconds that it (generally) takes for ii(1) to connect:
 CHLD_SLEEP	?= 300
-# Amount of seconds before wrapper initiates an ii instance:
+# Amount of seconds before wrapper initiates an ii(1) instance:
 LOOP_SLEEP	?= 60
 
 # Includes and libs:

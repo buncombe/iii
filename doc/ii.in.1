@@ -27,7 +27,7 @@ which contains the server directory (its name can be overridden by
 .Ar directory
 ).
 Beyond the path, inside the server directory, there are channel and nickname
-directories together with a FIFO file named "ii" and a regular one called
+directories together with a FIFO file named "in" and a regular one called
 "out".
 These two latter files do also occur inside each channel and nickname
 directory, which themselves are created upon joining a channel or opening of a
@@ -155,7 +155,7 @@ The FIFO files "in" are used to communicate with the server.
 .It Cm irc
 Inside this directory is the server directory and within the last mentioned
 one, there are channel and nickname directories together with a FIFO file named
-"ii" and a regular one called "out".
+"in" and a regular one called "out".
 These two latter files do also occur inside each channel and nickname
 directory, which themselves are created upon joining a channel or opening of a
 private conversation.
