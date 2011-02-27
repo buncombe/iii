@@ -106,15 +106,17 @@ main(int argc, char **argv)
 			waitpid(0, NULL, 0);
 		}
 
+		sleep(LOOP_SLEEP);
+
 		/* http://eternallyconfuzzled.com/arts/jsw_art_rand.aspx */
 		n = o + 1 + random() * 1.0 / ( RAND_MAX + 1.0 ) * (uargc - o - 1);
 		if ((n - o) & 1) n--;
 		s = strlen(args[0]) + strlen(argv[n]) + strlen(argv[n + 1]) + 10
-		    + sizeof(EXECUTABLE);
+		    + sizeof(II_EXEC);
 
 		if ((init = calloc(s, 1)) == NULL)
 			_exit(1);
-		strlcpy(init, EXECUTABLE" ", s);
+		strlcpy(init, II_EXEC" ", s);
 		strlcat(init, args[0], s);
 		strlcat(init, " -s ", s);
 		strlcat(init, argv[n], s);
@@ -131,7 +133,7 @@ main(int argc, char **argv)
 				continue;
 			}
 
-			sleep(SSLEEP);
+			sleep(CHLD_SLEEP);
 			system(args[1]);
 			_exit(0);
 		} else {

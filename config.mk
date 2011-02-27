@@ -17,10 +17,12 @@ DESTDIR		?=
 INCDIR		?= ${PREFIX}/include
 LIBDIR		?= ${PREFIX}/lib
 VERSION		?= 1.6
-# The ii(1) executable that the wrapper(1) program will use: 
-EXECUTABLE	?= ii
-# Amount of seconds that it (generally) takes for ii(1) to connect:
-SSLEEP		?= 300
+# The ii executable that the wrapper program will use: 
+II_EXEC		?= ii
+# Amount of seconds that it (generally) takes for ii to connect:
+CHLD_SLEEP	?= 300
+# Amount of seconds before wrapper initiates an ii instance:
+LOOP_SLEEP	?= 60
 
 # Includes and libs:
 INCLUDES	+= -I. -I${INCDIR} -I/usr/include
@@ -29,15 +31,18 @@ LIBS		+= -L${LIBDIR} -L/usr/lib -lc -lssl -lcrypto
 # Compiler flags:
 CC		?= cc
 CFLAGS		+= -g -O0 -W -Wall ${INCLUDES} -DVERSION=\"${VERSION}\" \
-    -DEXECUTABLE=\"${EXECUTABLE}\" -DSSLEEP=${SSLEEP} -DHAVE_SSL
+    -DII_EXEC=\"${II_EXEC}\" -DCHLD_SLEEP=${CHLD_SLEEP} \
+    -DLOOP_SLEEP=${LOOP_SLEEP} -DHAVE_SSL
 LDFLAGS		+= ${LIBS}
 
 # Uncomment for compiling on Solaris:
 #LIBS		= -L${LIBDIR} -L/usr/lib -lc -lsocket -lnsl -lssl -lcrypto
 #CFLAGS		= -g ${INCLUDES} -DVERSION=\"${VERSION}\" \
-#    -DEXECUTABLE=\"${EXECUTABLE}\" -DSSLEEP=${SSLEEP} -DHAVE_SSL
+    -DII_EXEC=\"${II_EXEC}\" -DCHLD_SLEEP=${CHLD_SLEEP} \
+    -DLOOP_SLEEP=${LOOP_SLEEP} -DHAVE_SSL
 
 # Uncomment to disable SSL support in ii:
 #LIBS		= -L${LIBDIR} -L/usr/lib -lc
 #CFLAGS		= -g -O0 -W -Wall ${INCLUDES} -DVERSION=\"${VERSION}\" \
-#    -DEXECUTABLE=\"${EXECUTABLE}\" -DSSLEEP=${SSLEEP}
+    -DII_EXEC=\"${II_EXEC}\" -DCHLD_SLEEP=${CHLD_SLEEP} \
+    -DLOOP_SLEEP=${LOOP_SLEEP}
