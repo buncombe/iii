@@ -116,7 +116,7 @@ FILES
      out     These files carry the server messages.
 
 SEE ALSO
-     echo(1), tail(1), SSL_get_peer_certificate(3)
+     echo(1), tail(1)
 
 AUTHORS
      Copyright (C) 2005-2006 by Anselm R. Garbe <garbeam (at) gmail (dot) com>
@@ -136,4 +136,4 @@ CAVEATS
      words, it is possible to compare the fingerprint of the used certificate
      with the fingerprint of the known and correct one.
 
-OpenBSD 4.8		       February 27, 2011		   OpenBSD 4.8
+OpenBSD 4.8		       February 28, 2011		   OpenBSD 4.8
