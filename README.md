@@ -21,7 +21,7 @@ An extract from the manpage ([txt][ii_man_txt] or [html][ii_man_html]):
 > 
 > The idea of this file system structure, is to be able to communicate with an
 > IRC server using basic command line tools. For example, if the desired action
-> is to join a channel, the command echo /j #channel > in will do the trick no
+> is to join a channel, the command `echo /j #channel > in` will do the trick no
 > matter which "in" FIFO file it is addressed to, as long as the file is in use
 > by the current instance of ii.
 
@@ -68,7 +68,7 @@ Changelog
 ---------
 Since I missed the chance to add a proper changelog right from the beginning,
 please have a look at the commit messages on
-[http://hg.suckless.org/ii/shortlog][hg] they are fairly descriptive on
+[http://hg.suckless.org/ii/shortlog][hg] - they are fairly descriptive on
 releases prior to 1.2.
 
 Contact
