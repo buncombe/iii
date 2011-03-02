@@ -15,9 +15,10 @@ fi
 echo "searching new query data"
 for i in `find $IRCPATH -newer $TMPFILE -name 'out'`
 do
-	grep -v '\-!\-' $i  > /dev/null 2>&1 # if file doesnt just contain server stuff
+	# If the file doesn't just contain server stuff.
+	grep -v '\-!\-' $i  > /dev/null 2>&1
 	if [ $? -ne 1 ]; then
-		# strip server, nickserv, chanserv and channel out files
+		# Strip server, nickserv, chanserv and channel out files.
 		echo $i | egrep -v -i "(nick|chan)serv|#|$IRCPATH\/[a-z0-9\.\-]+\/out$" > /dev/null 2>&1
 		if [ $? -ne 1 ]; then
 			printf "new data in: %s\n========================================================\n" "$i"
