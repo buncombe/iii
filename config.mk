@@ -18,7 +18,7 @@ DESTDIR		?=
 
 # Macro definitions:
 VERSION		?= 1.6
-# The ii(1) executable that the wrapper(1) program will use: 
+# The ii(1) executable that the wrapper(1) program will use:
 II_EXEC		?= ii
 # Amount of seconds that it (at most) takes for ii(1) to connect:
 CHLD_SLEEP	?= 300

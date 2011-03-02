@@ -12,13 +12,13 @@ An extract from the manpage ([txt][ii_man_txt] or [html][ii_man_html]):
 > file named "in" and a regular one called "out".  These two latter files do
 > also occur inside each channel and nickname directory, which themselves are
 > created upon joining a channel or opening of a private conversation.
-> 
+>
 > The FIFO files "in" are used to communicate with the server, while the
 > regular "out" files carry the server messages. If the data sent to an "in"
 > file is not an IRC command, in other words not starting with a slash "/", it
 > will be interpreted as a regular message (PRIVMSG) which later pops up in the
 > "out" file in the same directory level.
-> 
+>
 > The idea of this file system structure, is to be able to communicate with an
 > IRC server using basic command line tools. For example, if the desired action
 > is to join a channel, the command `echo /j #channel > in` will do the trick no
