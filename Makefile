@@ -48,13 +48,16 @@ ${CSRCS:.c=}: $@.o $@
 	@mandoc -Wall -fstrict $< | col -b >$@
 
 format: ${MANSRCS:.in.1=.1.txt} ${MANSRCS:.in.1=.1.html}
+	@echo Created TXT and HTML versions of the manpages.
 
 dist: all format
 	@mkdir -p ${PROJECT}-${VERSION}/${DOCSRC}
 	@cp -R query.sh Makefile CHANGES README.md LICENSE config.mk ${CSRCS} \
 	    ${PROJECT}-${VERSION}
 	@cp -R ${DOCSRC}FAQ.md ${MANSRCS} ${MANSRCS:.in.1=.1.txt} \
-	    ${MANSRCS:.in.1=.1.html} ${PROJECT}-${VERSION}/${DOCSRC}
+	    ${MANSRCS:.in.1=.1.html} ${MANSRCS:.in.1=.1} \
+	    ${PROJECT}-${VERSION}/${DOCSRC}
+	@cp -R patches/ ${PROJECT}-${VERSION}/patches
 	@tar -cf ${PROJECT}-${VERSION}.tar ${PROJECT}-${VERSION}
 	@gzip ${PROJECT}-${VERSION}.tar
 	@rm -rf ${PROJECT}-${VERSION}
