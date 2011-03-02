@@ -103,6 +103,7 @@ main(int argc, char **argv)
 		if (args[1] && pids[1] > 0) {
 			if (kill(pids[1], SIGKILL) && errno != ESRCH)
 				_exit(1);
+			/* FIXME: see SA_NOCLDWAIT in sigaction(3). */
 			waitpid(0, NULL, 0);
 		}
 
@@ -155,6 +156,7 @@ host_is_valid(char *h)
 	 *	A-Z	(0x41 <= c <= 0x5a)
 	 *	.-
 	 */
+	/* FIXME: Is too restrictive in its current shape. */
 	for (n = 0; n < strlen(h); n++)
 		if (((h[n] < 0x61 || h[n] > 0x7a) && (h[n] < 0x30 ||
 		    h[n] > 0x39) && (h[n] < 0x41 || h[n] > 0x5a))
