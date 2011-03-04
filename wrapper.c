@@ -80,7 +80,7 @@ main(int argc, char **argv)
 
 	pids[0] = fork();
 	if (pids[0] < 0)
-		exit(1);
+		err(1, "Failed to create child process.");
 	else if (pids[0] > 0)
 		exit(0);
 
@@ -88,9 +88,6 @@ main(int argc, char **argv)
 
 	sid = setsid();
 	if (sid < 0)
-		_exit(1);
-
-	if ((chdir("/")) < 0)
 		_exit(1);
 
 	close(STDIN_FILENO);
@@ -112,8 +109,8 @@ main(int argc, char **argv)
 		/* http://eternallyconfuzzled.com/arts/jsw_art_rand.aspx */
 		n = o + 1 + random() * 1.0 / ( RAND_MAX + 1.0 ) * (uargc - o - 1);
 		if ((n - o) & 1) n--;
-		s = strlen(args[0]) + strlen(argv[n]) + strlen(argv[n + 1]) + 10
-		    + sizeof(II_EXEC);
+		s = strlen(args[0]) + strlen(argv[n]) + strlen(argv[n + 1]) + 11
+		    + strlen(II_EXEC);
 
 		if ((init = calloc(s, 1)) == NULL)
 			_exit(1);
@@ -129,16 +126,16 @@ main(int argc, char **argv)
 			if (pids[1] < 0) {
 				_exit(1);
 			} else if (pids[1] > 0) {
-				system(init);
+				system(init); /* FIXME: Check return value. */
 				free(init);
 				continue;
 			}
 
 			sleep(CHLD_SLEEP);
-			system(args[1]);
+			system(args[1]); /* FIXME: Check return value. */
 			_exit(0);
 		} else {
-			system(init);
+			system(init);  /* FIXME: Check return value. */
 			free(init);
 		}
 	}
