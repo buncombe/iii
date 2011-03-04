@@ -19,11 +19,11 @@ DESTDIR		?=
 # Macro definitions:
 VERSION		?= 1.6
 # The ii(1) executable that the wrapper(1) program will use:
-II_EXEC		?= ii
+IIEXEC		?= ii
 # Amount of seconds that it (at most) takes for ii(1) to connect:
-CHLD_SLEEP	?= 300
+CHLDSLEEP	?= 300
 # Amount of seconds before wrapper(1) (re)initiates an ii(1) instance:
-LOOP_SLEEP	?= 60
+LOOPSLEEP	?= 60
 
 # Includes and libs:
 INCLUDES	+= -I. -I${INCDIR} -I/usr/include
@@ -32,20 +32,20 @@ LIBS		+= -L${LIBDIR} -L/usr/lib -lc -lssl -lcrypto
 # Compiler flags:
 CC		?= cc
 CFLAGS		+= -g -O0 -W -Wall ${INCLUDES} -DVERSION=\"${VERSION}\" \
-    -DII_EXEC=\"${II_EXEC}\" -DCHLD_SLEEP=${CHLD_SLEEP} \
-    -DLOOP_SLEEP=${LOOP_SLEEP} -DHAVE_SSL
+    -DIIEXEC=\"${IIEXEC}\" -DCHLDSLEEP=${CHLDSLEEP} \
+    -DLOOPSLEEP=${LOOPSLEEP} -DUSESSL
 
 # Uncomment for compiling on Solaris:
 #LIBS		= -L${LIBDIR} -L/usr/lib -lc -lsocket -lnsl -lssl -lcrypto
 #CFLAGS		= -g ${INCLUDES} -DVERSION=\"${VERSION}\" \
-    -DII_EXEC=\"${II_EXEC}\" -DCHLD_SLEEP=${CHLD_SLEEP} \
-    -DLOOP_SLEEP=${LOOP_SLEEP} -DHAVE_SSL
+    -DIIEXEC=\"${IIEXEC}\" -DCHLDSLEEP=${CHLDSLEEP} \
+    -DLOOPSLEEP=${LOOPSLEEP} -DUSESSL
 
 # Uncomment to disable SSL support in ii(1):
 #LIBS		= -L${LIBDIR} -L/usr/lib -lc
 #CFLAGS		= -g -O0 -W -Wall ${INCLUDES} -DVERSION=\"${VERSION}\" \
-    -DII_EXEC=\"${II_EXEC}\" -DCHLD_SLEEP=${CHLD_SLEEP} \
-    -DLOOP_SLEEP=${LOOP_SLEEP}
+    -DIIEXEC=\"${IIEXEC}\" -DCHLDSLEEP=${CHLDSLEEP} \
+    -DLOOPSLEEP=${LOOPSLEEP}
 
 # Linker flags. If static binaries are desired, add "-static" to this
 # environment variable.

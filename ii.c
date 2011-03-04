@@ -15,7 +15,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <unistd.h>
-#ifdef HAVE_SSL
+#ifdef USESSL
 #include <openssl/rand.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
@@ -27,7 +27,7 @@
 #define PING_TIMEOUT 300
 #define SERVER_PORT 6667
 #define IS_CHANNEL(s) (((s)[0]=='#')||((s)[0]=='&')||((s)[0]=='+')||((s)[0]=='!'))
-#ifdef HAVE_SSL
+#ifdef USESSL
 #define SSL_SERVER_PORT 6697
 #define WRITE(conn, msg) (use_ssl ? SSL_write(irc->sslHandle, msg, strlen(msg)) : write(conn->irc, msg, strlen(msg)))
 #define READ(fd, buf, s) (from_srv && use_ssl ? SSL_read(irc->sslHandle, buf, s) : read(fd, buf, s))
@@ -43,7 +43,7 @@ struct Channel {
 	char *name;
 	Channel *next;
 };
-#ifdef HAVE_SSL
+#ifdef USESSL
 typedef struct {
 	int irc;
 	SSL *sslHandle;
@@ -51,7 +51,7 @@ typedef struct {
 } conn;
 #endif
 
-#ifdef HAVE_SSL
+#ifdef USESSL
 static size_t use_ssl = 0;
 static conn *irc;
 static unsigned char fp[EVP_MAX_MD_SIZE];
@@ -73,7 +73,7 @@ static void usage() {
 			"(C)opyright MMV-MMXI Nico Golde\n"
 			"usage: ii [-i <irc dir>] [-s <host>] [-p <port>]\n"
 			"          [-n <nick>] [-k <password>] [-f <fullname>]\n"
-#ifdef HAVE_SSL
+#ifdef USESSL
 			"          [-e] [-d <directory>]\n");
 #else
 			"          [-d <directory>]\n");
@@ -183,7 +183,7 @@ static void login(char *key, char *fullname) {
 	WRITE(irc, message);	/* login */
 }
 
-#ifdef HAVE_SSL
+#ifdef USESSL
 static conn *ssl_connect(int fd) {
 	conn *c = NULL;
 
@@ -237,7 +237,7 @@ static int tcpopen(unsigned short port) {
 		exit(EXIT_FAILURE);
 	}
 
-#ifdef HAVE_SSL
+#ifdef USESSL
 	return ssl_connect(fd);
 #else
 	return fd;
@@ -446,7 +446,7 @@ static void proc_server_cmd(char *buf) {
 		print_out(argv[TOK_CHAN], message);
 }
 
-#ifdef HAVE_SSL
+#ifdef USESSL
 static int read_line(int fd, size_t res_len, char *buf, size_t from_srv) {
 #else
 static int read_line(int fd, size_t res_len, char *buf) {
@@ -465,7 +465,7 @@ static int read_line(int fd, size_t res_len, char *buf) {
 
 static void handle_channels_input(Channel *c) {
 	static char buf[PIPE_BUF];
-#ifdef HAVE_SSL
+#ifdef USESSL
 	if(read_line(c->fd, PIPE_BUF, buf, 0) == -1) {
 #else
 	if(read_line(c->fd, PIPE_BUF, buf) == -1) {
@@ -483,7 +483,7 @@ static void handle_channels_input(Channel *c) {
 
 static void handle_server_output() {
 	static char buf[PIPE_BUF];
-#ifdef HAVE_SSL
+#ifdef USESSL
 	if(read_line(irc->irc, PIPE_BUF, buf, 1) == -1) {
 #else
 	if(read_line(irc, PIPE_BUF, buf) == -1) {
@@ -503,7 +503,7 @@ static void run() {
 
 	for(;;) {
 		FD_ZERO(&rd);
-#ifdef HAVE_SSL
+#ifdef USESSL
 		maxfd = irc->irc;
 		FD_SET(irc->irc, &rd);
 #else
@@ -532,7 +532,7 @@ static void run() {
 			WRITE(irc, ping_msg);
 			continue;
 		}
-#ifdef HAVE_SSL
+#ifdef USESSL
 		if(FD_ISSET(irc->irc, &rd)) {
 #else
 		if(FD_ISSET(irc, &rd)) {
@@ -550,7 +550,7 @@ int main(int argc, char *argv[]) {
 	int i;
 	unsigned short port = SERVER_PORT;
 	char *key = NULL, *fullname = NULL, *dir = NULL;
-#ifdef HAVE_SSL
+#ifdef USESSL
 	char prefix[_POSIX_PATH_MAX] = "irc", *pmsg = message + 17;
 #else
 	char prefix[_POSIX_PATH_MAX] = "irc";
@@ -558,7 +558,7 @@ int main(int argc, char *argv[]) {
 
 	for(i = 1; (i + 1 < argc) && (argv[i][0] == '-'); i++) {
 		switch (argv[i][1]) {
-#ifdef HAVE_SSL
+#ifdef USESSL
 			case 'e': use_ssl = 1; break;
 #endif
 			case 'i': snprintf(prefix,sizeof(prefix),"%s", argv[++i]); break;
@@ -572,7 +572,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	if(i != argc) usage();
-#ifdef HAVE_SSL
+#ifdef USESSL
 	if(use_ssl) port = port == SERVER_PORT ? SSL_SERVER_PORT : port;
 #endif
 	irc = tcpopen(port);
@@ -584,7 +584,7 @@ int main(int argc, char *argv[]) {
 
 	add_channel(""); /* master channel */
 	login(key, fullname);
-#ifdef HAVE_SSL
+#ifdef USESSL
 	if (use_ssl) {
 		snprintf(message, PIPE_BUF, "MD5 Fingerprint: ");
 		for(i = 0; strlen(message) < PIPE_BUF && i < fp_len; i++) {
