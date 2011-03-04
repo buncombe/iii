@@ -15,7 +15,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define FIND_ELEM(a, b) (((a) - (b)) / 2 + 1)
+#define FINDELEM(a, b) (((a) - (b)) / 2 + 1)
 
 static size_t	valhost(char *);
 static int	valport(char *);
@@ -62,23 +62,23 @@ main(int argc, char **argv)
 		if ((j - i) & 1) {
 			if ((rv = valport(argv[j])) < 0)
 				errx(1, "Port number `%lu' is not in range.",
-				    (unsigned long)FIND_ELEM(j, i));
+				    (unsigned long)FINDELEM(j, i));
 			else if (rv > 0)
 				errx(1, "Character `%lu' in port `%lu' is not"
 				    " allowed.", (unsigned long)rv,
-				    (unsigned long)FIND_ELEM(j, i));
+				    (unsigned long)FINDELEM(j, i));
 		} else
 			if ((rv = valhost(argv[j])) != NULL)
 				errx(1, "Character `%lu' in hostname `%lu' is"
 				    " not allowed.", (unsigned long)rv,
-				    (unsigned long)FIND_ELEM(j, i));
+				    (unsigned long)FINDELEM(j, i));
 
 	if (iiarg)
 		printf("ii arg: `%s'.\n", iiarg);
 	if (sharg)
 		printf("sh arg: `%s'.\n", sharg);
 	for (j = i; j < argc - 1; j += 2)
-		printf("Server[%lu]: %s:%d\n", (unsigned long)FIND_ELEM(j, i),
+		printf("Server[%lu]: %s:%d\n", (unsigned long)FINDELEM(j, i),
 		    argv[j], atoi(argv[j + 1]));
 
 	iipid = fork();
