@@ -116,7 +116,7 @@ main(int argc, char **argv)
 		if ((j - i) & 1)
 			j--;
 		size = strlen(iiarg) + strlen(argv[j]) + strlen(argv[j + 1]) +
-		    11 + strlen(IIEXEC);
+		    strlen(IIEXEC) + 11;
 
 		if ((iicmd = calloc(size, 1)) == NULL)
 			_exit(EXIT_FAILURE);
@@ -166,7 +166,6 @@ valhost(char *h)
 	 *	A-Z	(0x41 <= c <= 0x5a)
 	 *	.-
 	 */
-	/* FIXME: Is too restrictive in its current shape. */
 	for (i = 0; i < strlen(h); i++)
 		if (((h[i] < 0x61 || h[i] > 0x7a) && (h[i] < 0x30 ||
 		    h[i] > 0x39) && (h[i] < 0x41 || h[i] > 0x5a))
