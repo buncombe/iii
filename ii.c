@@ -78,7 +78,7 @@ static void usage() {
 #else
 			"          [-d <directory>]\n");
 #endif
-	exit(EXIT_SUCCESS);
+	exit(EXIT_FAILURE);
 }
 
 static char *striplower(char *s) {

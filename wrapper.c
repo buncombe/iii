@@ -36,14 +36,16 @@ main(int argc, char **argv)
 		switch (ch) {
 		case 'i':
 			if (valsysarg(optarg))
-				errx(1, "sh(1) meta-characters and quotation"
-				    " marks are not allowed in `ii arg'.");
+				errx(EXIT_FAILURE, "sh(1) meta-characters and"
+				    " quotation marks are not allowed in `ii"
+				    " arg'.");
 			iiarg = optarg;
 			break;
 		case 's':
 			if (valsysarg(optarg))
-				errx(1, "sh(1) meta-characters and quotation"
-				    " marks are not allowed in `sh arg'.");
+				errx(EXIT_FAILURE, "sh(1) meta-characters and"
+				    " quotation marks are not allowed in `sh"
+				    " arg'.");
 			sharg = optarg;
 			break;
 		default:
@@ -61,16 +63,19 @@ main(int argc, char **argv)
 	for (j = i; j < argc; j++) /* Validate the hosts and ports. */
 		if ((j - i) & 1) {
 			if ((rv = valport(argv[j])) < 0)
-				errx(1, "Port number `%lu' is not in range.",
+				errx(EXIT_FAILURE, "Port number `%lu' is not"
+				    " in range.",
 				    (unsigned long)FINDELEM(j, i));
 			else if (rv > 0)
-				errx(1, "Character `%lu' in port `%lu' is not"
-				    " allowed.", (unsigned long)rv,
+				errx(EXIT_FAILURE, "Character `%lu' in port"
+				    " `%lu' is not allowed.",
+				    (unsigned long)rv,
 				    (unsigned long)FINDELEM(j, i));
 		} else
 			if ((rv = valhost(argv[j])) != NULL)
-				errx(1, "Character `%lu' in hostname `%lu' is"
-				    " not allowed.", (unsigned long)rv,
+				errx(EXIT_FAILURE, "Character `%lu' in"
+				    " hostname `%lu' is not allowed.",
+				    (unsigned long)rv,
 				    (unsigned long)FINDELEM(j, i));
 
 	if (iiarg)
@@ -83,40 +88,38 @@ main(int argc, char **argv)
 
 	iipid = fork();
 	if (iipid < 0)
-		err(1, "Failed to create child process.");
+		err(EXIT_FAILURE, "Failed to create child process.");
 	else if (iipid > 0)
-		exit(0);
+		exit(EXIT_SUCCESS);
 
 	umask(0);
 
 	sid = setsid();
 	if (sid < 0)
-		_exit(1);
+		_exit(EXIT_FAILURE);
 
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
 	srandom(time(NULL));
+	signal(SIGCHLD, SIG_IGN);
 
 	for (;;) {
-		if (sharg && shpid > 0) {
-			if (kill(shpid, SIGKILL) && errno != ESRCH)
-				_exit(1);
-			/* FIXME: see SA_NOCLDWAIT in sigaction(3). */
-			waitpid(0, NULL, 0);
-		}
+		if (sharg && shpid > 0)
+			if (kill(shpid, SIGKILL) == -1 && errno != ESRCH)
+				_exit(EXIT_FAILURE);
 
 		sleep(LOOPSLEEP);
 
 		/* http://eternallyconfuzzled.com/arts/jsw_art_rand.aspx */
-		j = i + 1 + random() * 1.0 / ( RAND_MAX + 1.0 ) * (argc - i - 1);
+		j = i + 1 + random() * 1.0 / (RAND_MAX + 1.0) * (argc - i - 1);
 		if ((j - i) & 1)
 			j--;
 		size = strlen(iiarg) + strlen(argv[j]) + strlen(argv[j + 1]) +
 		    11 + strlen(IIEXEC);
 
 		if ((iicmd = calloc(size, 1)) == NULL)
-			_exit(1);
+			_exit(EXIT_FAILURE);
 		strlcpy(iicmd, IIEXEC" ", size);
 		strlcat(iicmd, iiarg, size);
 		strlcat(iicmd, " -s ", size);
@@ -127,21 +130,28 @@ main(int argc, char **argv)
 		if (sharg) {
 			shpid = fork();
 			if (shpid < 0) {
-				_exit(1);
+				_exit(EXIT_FAILURE);
 			} else if (shpid > 0) {
-				system(iicmd); /* FIXME: Check return value. */
+				rv = system(iicmd);
+				if (rv < 0 || WEXITSTATUS(rv) == 127)
+					killpg(sid, SIGKILL);
 				free(iicmd);
 				continue;
 			}
 
 			sleep(CHLDSLEEP);
-			system(sharg); /* FIXME: Check return value. */
-			_exit(0);
+			rv = system(sharg);
+			if (rv < 0 || WEXITSTATUS(rv) > 0)
+				killpg(sid, SIGKILL);
+			_exit(EXIT_SUCCESS);
 		} else {
-			system(iicmd);  /* FIXME: Check return value. */
+			rv = system(iicmd);
+			if (rv < 0 || WEXITSTATUS(rv) == 127)
+				_exit(EXIT_FAILURE);
 			free(iicmd);
 		}
 	}
+	/* NOTREACHED */
 }
 
 static size_t
@@ -200,5 +210,5 @@ usage(void)
 
 	(void)fprintf(stderr, "usage: %s [-i ii arg] [-s sh arg] \\\n\t --"
 	    " host1 port1 [host2 port2 ...]\n", __progname);
-	exit(1);
+	exit(EXIT_FAILURE);
 }
