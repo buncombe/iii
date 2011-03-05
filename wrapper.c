@@ -141,7 +141,7 @@ main(int argc, char **argv)
 
 			sleep(CHLDSLEEP);
 			rv = system(sharg);
-			if (rv < 0 || WEXITSTATUS(rv) > 0)
+			if (rv < 0 || WEXITSTATUS(rv) != EXIT_SUCCESS)
 				killpg(sid, SIGKILL);
 			_exit(EXIT_SUCCESS);
 		} else {
