@@ -121,7 +121,7 @@ static int get_filepath(char *filepath, size_t len, char *channel, char *file) {
 
 static void create_filepath(char *filepath, size_t len, char *channel, char *suffix) {
 	if(!get_filepath(filepath, len, striplower(channel), suffix)) {
-		fprintf(stderr, "%s", "ii: path to irc directory too long\n");
+		fprintf(stderr, "ii: path to irc directory too long\n");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -145,7 +145,7 @@ static void add_channel(char *cname) {
 
 	fd = open_channel(name);
 	if(fd == -1) {
-		printf("ii: exiting, cannot create in channel: %s\n", name);
+		fprintf(stderr, "ii: exiting, cannot create in channel: %s\n", name);
 		exit(EXIT_FAILURE);
 	}
 	c = calloc(1, sizeof(Channel));
@@ -576,7 +576,7 @@ int main(int argc, char *argv[]) {
 #endif
 	irc = tcpopen(port);
 	if(!snprintf(path, sizeof(path), "%s/%s", prefix, dir ? dir : host)) {
-		fprintf(stderr, "%s", "ii: path to irc directory too long\n");
+		fprintf(stderr, "ii: path to irc directory too long\n");
 		exit(EXIT_FAILURE);
 	}
 	create_dirtree(path);
@@ -586,7 +586,7 @@ int main(int argc, char *argv[]) {
 #ifdef USESSL
 	if (use_ssl && fp_len) {
 		snprintf(message, PIPE_BUF, "MD5 Fingerprint: ");
-		for(i = 0; strlen(message) + 1 < PIPE_BUF && i < fp_len; i++) {
+		for(i = 0; strlen(message) + (i > 0 ? 4 : 3) < PIPE_BUF && i < fp_len; i++) {
 			snprintf(pmsg, PIPE_BUF, i > 0 ? ":%02X" : "%02X", fp[i]);
 			if(i > 0) pmsg += 3;
 			else pmsg += 2;
