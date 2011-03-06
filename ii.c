@@ -55,7 +55,7 @@ typedef struct {
 static size_t use_ssl = 0;
 static conn *irc;
 static unsigned char fp[EVP_MAX_MD_SIZE];
-static int fp_len;
+static int fp_len = 0;
 #else
 static int irc;
 #endif
@@ -556,22 +556,21 @@ int main(int argc, char *argv[]) {
 	char prefix[_POSIX_PATH_MAX] = "irc";
 #endif
 
-	for(i = 1; (i + 1 < argc) && (argv[i][0] == '-'); i++) {
-		switch (argv[i][1]) {
+	while((i = getopt(argc, argv, "ei:s:p:n:k:f:d:")) != -1) {
+		switch (i) {
 #ifdef USESSL
 			case 'e': use_ssl = 1; break;
 #endif
-			case 'i': snprintf(prefix,sizeof(prefix),"%s", argv[++i]); break;
-			case 's': host = argv[++i]; break;
-			case 'p': port = strtol(argv[++i], NULL, 10); break;
-			case 'n': snprintf(nick,sizeof(nick),"%s", argv[++i]); break;
-			case 'k': key = argv[++i]; break;
-			case 'f': fullname = argv[++i]; break;
-			case 'd': dir = argv[++i]; break;
+			case 'i': snprintf(prefix,sizeof(prefix),"%s", optarg); break;
+			case 's': host = optarg; break;
+			case 'p': port = strtol(optarg, NULL, 10); break;
+			case 'n': snprintf(nick,sizeof(nick),"%s", optarg); break;
+			case 'k': key = optarg; break;
+			case 'f': fullname = optarg; break;
+			case 'd': dir = optarg; break;
 			default: usage(); break;
 		}
 	}
-	if(i != argc) usage();
 #ifdef USESSL
 	if(use_ssl) port = port == SERVER_PORT ? SSL_SERVER_PORT : port;
 #endif
@@ -585,9 +584,9 @@ int main(int argc, char *argv[]) {
 	add_channel(""); /* master channel */
 	login(key, fullname);
 #ifdef USESSL
-	if (use_ssl) {
+	if (use_ssl && fp_len) {
 		snprintf(message, PIPE_BUF, "MD5 Fingerprint: ");
-		for(i = 0; strlen(message) < PIPE_BUF && i < fp_len; i++) {
+		for(i = 0; strlen(message) + 1 < PIPE_BUF && i < fp_len; i++) {
 			snprintf(pmsg, PIPE_BUF, i > 0 ? ":%02X" : "%02X", fp[i]);
 			if(i > 0) pmsg += 3;
 			else pmsg += 2;
