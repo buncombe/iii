@@ -2,7 +2,7 @@
 # ----------------------------------------------------
 # Nico Golde <nico@ngolde.de>
 # License: do whatever you want with this code
-# Purpose: locate new queries for the ii irc client
+# Purpose: locate new queries for the ii(1) IRC client
 # ----------------------------------------------------
 
 IRCPATH=irc

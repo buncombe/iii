@@ -3,6 +3,7 @@
  * or her rights to the work under copyright law and all related or neighboring
  * legal rights he or she had in the work, to the extent allowable by law.
  */
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -56,7 +57,7 @@ main(int argc, char **argv)
 		if (!strcmp(argv[i], "--"))
 			break;
 	i++;
-	/* argv[i] is now (hopefully) the first hostname. */
+	/* argv[i] is now, hopefully, the first hostname. */
 	if ((argc - i) & 1)
 		usage();
 
