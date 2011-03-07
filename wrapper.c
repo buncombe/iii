@@ -84,13 +84,13 @@ main(int argc, char **argv)
 	if (iipid < 0)
 		err(EXIT_FAILURE, "Failed to create child process.");
 	else if (iipid > 0)
-		err(EXIT_FAILURE, "Failed to create a new session.");
+		exit(EXIT_SUCCESS);
 
 	umask(0);
 
 	sid = setsid();
 	if (sid < 0)
-		_exit(EXIT_FAILURE);
+		err(EXIT_FAILURE, "Failed to create a new session.");
 
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
