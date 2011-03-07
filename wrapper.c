@@ -17,7 +17,7 @@
 
 #define FINDELEM(a, b) (((a) - (b)) / 2 + 1)
 
-static size_t	valhost(char *);
+static int	valhost(char *);
 static int	valport(char *);
 static size_t	valsysarg(char *);
 static void	usage(void);
@@ -56,11 +56,13 @@ main(int argc, char **argv)
 	for (i = 1; i < argc - 2; i++)
 		if (!strcmp(argv[i], "--"))
 			break;
-	i++; /* argv[i] is now the first hostname, hopefully: */
+	i++;
+	/* argv[i] is now (hopefully) the first hostname. */
 	if ((argc - i) & 1)
 		usage();
 
-	for (j = i; j < argc; j++) /* Validate the hosts and ports. */
+	/* Validate the hostnames and ports. */
+	for (j = i; j < argc; j++)
 		if ((j - i) & 1) {
 			if ((rv = valport(argv[j])) < 0)
 				errx(EXIT_FAILURE, "Port number `%lu' is not"
@@ -72,7 +74,12 @@ main(int argc, char **argv)
 				    (unsigned long)rv,
 				    (unsigned long)FINDELEM(j, i));
 		} else
-			if ((rv = valhost(argv[j])) != NULL)
+			if ((rv = valhost(argv[j])) < 0)
+				errx(EXIT_FAILURE, "Hostname `%lu' has a suffix"
+				    " or a prefix that is not allowed,"
+				    " alternatively it is larger than 255"
+				    " bytes.", (unsigned long)FINDELEM(j, i));
+			else if (rv > 0)
 				errx(EXIT_FAILURE, "Character `%lu' in"
 				    " hostname `%lu' is not allowed.",
 				    (unsigned long)rv,
@@ -154,26 +161,78 @@ main(int argc, char **argv)
 	/* NOTREACHED */
 }
 
-static size_t
+/*
+ * valhost() - Validate hostname
+ *
+ * Abstract:
+ *  According to RFC1123 and RFC952, a hostname can only begin and end with any
+ *  character in the ranges A-Z (case-insensitive) and 0-9. At the same time, a
+ *  hostname also can contain dots (`.') and hyphens (`-'), although its total
+ *  length must not exceed 255 bytes and each label may not be longer than 63
+ *  octets.
+ *
+ *  The function valhost() takes one argument: a pointer to a NUL-terminated
+ *  char array h.
+ *
+ * Return values:
+ *  -3    Something is wrong with the labels.
+ *  -2    The char array h is too long.
+ *  -1    Something is wrong with the prefix or suffix.
+ *   0    It is ok.
+ *   1<=n Character n-1 (according to the array index) is not allowed.
+ *
+ * List of character ranges:
+ *  a-z (0x61 <= c <= 0x7a)
+ *  0-9 (0x30 <= c <= 0x39)
+ *  A-Z (0x41 <= c <= 0x5a)
+ */
+static int
 valhost(char *h)
 {
-	size_t i;
+	size_t i, j;
 
-	/*
-	 * Permitted characters in a hostname:
-	 * 	a-z	(0x61 <= c <= 0x7a)
-	 *	0-9	(0x30 <= c <= 0x39)
-	 *	A-Z	(0x41 <= c <= 0x5a)
-	 *	.-
-	 */
+	/* Test prefixes and suffixes. */
+	if (h[0] == '.' || h[0] == '-' || h[strlen(h) - 1] == '-' ||
+	    h[strlen(h) - 1] == '.')
+		return -1;
+
+	/* Test length. */
+	if (strlen(h) > 255)
+		return -2;
+
+	/* Test characters. */
 	for (i = 0; i < strlen(h); i++)
-		if (((h[i] < 0x61 || h[i] > 0x7a) && (h[i] < 0x30 ||
-		    h[i] > 0x39) && (h[i] < 0x41 || h[i] > 0x5a))
+		if ((h[i] < 0x61 || h[i] > 0x7a) && (h[i] < 0x30 ||
+		    h[i] > 0x39) && (h[i] < 0x41 || h[i] > 0x5a)
 		    && h[i] != '.' && h[i] != '-')
 			return i + 1;
+
+	/* Test labels. */
+	for (i = 0, j = 0; i < strlen(h); i++) {
+		if (j == 65 || (i && h[i] == '.' && h[i - 1] == '.'))
+			return -3;
+
+		if (h[i] != '.')
+			j++;
+		else
+			j = 1;
+	}
+
 	return 0;
 }
 
+/*
+ * valport() - Validate port
+ *
+ * If the atoi(3) value of the NUL-terminated p, which is passed by reference
+ * as a pointer to a char array in the sole argument of the function, is not
+ * within the range 0 < i < 65536, then it returns the value -1.
+ *
+ * If the value of element x in p is not a number, the location of x (according
+ * to the array index) added with 1 is returned (thus never 0).
+ *
+ * In case p passes all the tests, then the value 0 is returned.
+ */
 static int
 valport(char *p)
 {
@@ -189,6 +248,8 @@ valport(char *p)
 }
 
 /*
+ * valsysarg() - Validate system(3) argument
+ *
  * valsysarg() takes a pointer to a char array s and tests whether s contains
  * any non-escaped meta-characters (`<', `>', `|', `;', `(', `)' and `&') and
  * quotation marks (`"' and `\''), in case it does: it returns a value greater
