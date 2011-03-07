@@ -194,13 +194,13 @@ valhost(char *h)
 		    && h[i] != '.' && h[i] != '-')
 			return i + 1;
 
-		if (j == 65 || (i && h[i] == '.' && h[i - 1] == '.'))
+		if (j == 64 || (i && h[i] == '.' && h[i - 1] == '.'))
 			return -3;
 
 		if (h[i] != '.')
 			j++;
 		else
-			j = 1;
+			j = 0;
 	}
 
 	return 0;
