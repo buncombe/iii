@@ -188,17 +188,27 @@ valport(char *p)
 	return 0;
 }
 
+/*
+ * valsysarg() takes a pointer to a char array s and tests whether s contains
+ * any non-escaped meta-characters (`<', `>', `|', `;', `(', `)' and `&') and
+ * quotation marks (`"' and `\''), in case it does: it returns a value greater
+ * than zero which represents the element after the one (i + 1) where the
+ * character was found.
+ *
+ * If s is clean from non-escaped meta-characters and quotation marks,
+ * valsysarg() returns 0.
+ */
 static size_t
 valsysarg(char *s)
 {
 	size_t i;
 
 	for (i = 0; i < strlen(s); i++)
-		if (s[i] == '<' || s[i] == '>' || s[i] == '|' || s[i] == ';' ||
-		    s[i] == '(' || s[i] == ')' || s[i] == '&' || s[i] == '"' ||
-		    s[i] == '\'')
-			if (i && s[i - 1] != '\\')
-				return i + 1;
+		if ((s[i] == '<' || s[i] == '>' || s[i] == '|' ||
+		    s[i] == ';' || s[i] == '(' || s[i] == ')' || s[i] == '&' ||
+		    s[i] == '"' || s[i] == '\'') && (!i || s[i - 1] != '\\'))
+			return i + 1;
+
 	return 0;
 }
 
