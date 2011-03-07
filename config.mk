@@ -6,12 +6,12 @@
 
 # File paths:
 PREFIX		?= /usr/local
-BINDIR		?= ${PREFIX}/bin
-MANDIR		?= ${PREFIX}/share/man
-MAN1DIR		?= ${MANDIR}/man1
-DOCDIR		?= ${PREFIX}/share/doc/ii
-INCDIR		?= ${PREFIX}/include
-LIBDIR		?= ${PREFIX}/lib
+BINDIR		?= $(PREFIX)/bin
+MANDIR		?= $(PREFIX)/share/man
+MAN1DIR		?= $(MANDIR)/man1
+DOCDIR		?= $(PREFIX)/share/doc/ii
+INCDIR		?= $(PREFIX)/include
+LIBDIR		?= $(PREFIX)/lib
 
 # Set the following to install to a different root directory:
 DESTDIR		?=
@@ -26,27 +26,27 @@ CHLDSLEEP	?= 300
 LOOPSLEEP	?= 60
 
 # Includes and libs:
-INCLUDES	+= -I. -I${INCDIR} -I/usr/include
-LIBS		+= -L${LIBDIR} -L/usr/lib -lc -lssl -lcrypto
+INCLUDES	+= -I. -I$(INCDIR) -I/usr/include
+LIBS		+= -L$(LIBDIR) -L/usr/lib -lc -lssl -lcrypto
 
 # Compiler flags:
 CC		?= cc
-CFLAGS		+= -g -O0 -W -Wall ${INCLUDES} -DVERSION=\"${VERSION}\" \
-    -DIIEXEC=\"${IIEXEC}\" -DCHLDSLEEP=${CHLDSLEEP} \
-    -DLOOPSLEEP=${LOOPSLEEP} -DUSESSL
+CFLAGS		+= -g -O0 -W -Wall $(INCLUDES) -DVERSION=\"$(VERSION)\" \
+    -DIIEXEC=\"$(IIEXEC)\" -DCHLDSLEEP=$(CHLDSLEEP) \
+    -DLOOPSLEEP=$(LOOPSLEEP) -DUSESSL
 
 # Uncomment for compiling on Solaris:
-#LIBS		= -L${LIBDIR} -L/usr/lib -lc -lsocket -lnsl -lssl -lcrypto
-#CFLAGS		= -g ${INCLUDES} -DVERSION=\"${VERSION}\" \
-    -DIIEXEC=\"${IIEXEC}\" -DCHLDSLEEP=${CHLDSLEEP} \
-    -DLOOPSLEEP=${LOOPSLEEP} -DUSESSL
+#LIBS		= -L$(LIBDIR) -L/usr/lib -lc -lsocket -lnsl -lssl -lcrypto
+#CFLAGS		= -g $(INCLUDES) -DVERSION=\"$(VERSION)\" \
+    -DIIEXEC=\"$(IIEXEC)\" -DCHLDSLEEP=$(CHLDSLEEP) \
+    -DLOOPSLEEP=$(LOOPSLEEP) -DUSESSL
 
 # Uncomment to disable SSL support in ii(1):
-#LIBS		= -L${LIBDIR} -L/usr/lib -lc
-#CFLAGS		= -g -O0 -W -Wall ${INCLUDES} -DVERSION=\"${VERSION}\" \
-    -DIIEXEC=\"${IIEXEC}\" -DCHLDSLEEP=${CHLDSLEEP} \
-    -DLOOPSLEEP=${LOOPSLEEP}
+#LIBS		= -L$(LIBDIR) -L/usr/lib -lc
+#CFLAGS		= -g -O0 -W -Wall $(INCLUDES) -DVERSION=\"$(VERSION)\" \
+    -DIIEXEC=\"$(IIEXEC)\" -DCHLDSLEEP=$(CHLDSLEEP) \
+    -DLOOPSLEEP=$(LOOPSLEEP)
 
 # Linker flags. If static binaries are desired, add "-static" to this
 # environment variable.
-LDFLAGS		+= ${LIBS}
+LDFLAGS		+= $(LIBS)
