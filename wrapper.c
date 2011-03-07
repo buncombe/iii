@@ -64,25 +64,12 @@ main(int argc, char **argv)
 	/* Validate the hostnames and ports. */
 	for (j = i; j < argc; j++)
 		if ((j - i) & 1) {
-			if ((rv = valport(argv[j])) < 0)
+			if (valport(argv[j]))
 				errx(EXIT_FAILURE, "Port number `%lu' is not"
-				    " in range.",
-				    (unsigned long)FINDELEM(j, i));
-			else if (rv > 0)
-				errx(EXIT_FAILURE, "Character `%lu' in port"
-				    " `%lu' is not allowed.",
-				    (unsigned long)rv,
-				    (unsigned long)FINDELEM(j, i));
+				    " ok.", (unsigned long)FINDELEM(j, i));
 		} else
-			if ((rv = valhost(argv[j])) < 0)
-				errx(EXIT_FAILURE, "Hostname `%lu' has a suffix"
-				    " or a prefix that is not allowed,"
-				    " alternatively it is larger than 255"
-				    " bytes.", (unsigned long)FINDELEM(j, i));
-			else if (rv > 0)
-				errx(EXIT_FAILURE, "Character `%lu' in"
-				    " hostname `%lu' is not allowed.",
-				    (unsigned long)rv,
+			if (valhost(argv[j]))
+				errx(EXIT_FAILURE, "Hostname `%lu' is not ok.",
 				    (unsigned long)FINDELEM(j, i));
 
 	if (iiarg)
@@ -200,15 +187,13 @@ valhost(char *h)
 	if (strlen(h) > 255)
 		return -2;
 
-	/* Test characters. */
-	for (i = 0; i < strlen(h); i++)
+	/* Test characters and labels. */
+	for (i = 0, j = 0; i < strlen(h); i++) {
 		if ((h[i] < 0x61 || h[i] > 0x7a) && (h[i] < 0x30 ||
 		    h[i] > 0x39) && (h[i] < 0x41 || h[i] > 0x5a)
 		    && h[i] != '.' && h[i] != '-')
 			return i + 1;
 
-	/* Test labels. */
-	for (i = 0, j = 0; i < strlen(h); i++) {
 		if (j == 65 || (i && h[i] == '.' && h[i - 1] == '.'))
 			return -3;
 
