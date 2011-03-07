@@ -84,7 +84,7 @@ main(int argc, char **argv)
 	if (iipid < 0)
 		err(EXIT_FAILURE, "Failed to create child process.");
 	else if (iipid > 0)
-		exit(EXIT_SUCCESS);
+		err(EXIT_FAILURE, "Failed to create a new session.");
 
 	umask(0);
 

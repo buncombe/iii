@@ -8,7 +8,8 @@ CONVERT = doc/ii.1.txt doc/ii.1.html doc/wrapper.1.txt doc/wrapper.1.html
 .PHONY: all clean convert dist format install uninstall
 .SUFFIXES: .in.1 .1 .1.html .1.txt
 
-all: ii wrapper format
+default: ii wrapper format
+all: ii wrapper format convert
 convert: $(CONVERT)
 format: $(FORMAT)
 
