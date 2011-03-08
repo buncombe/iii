@@ -126,9 +126,7 @@ main(int argc, char **argv)
 			if (shpid < 0) {
 				_exit(EXIT_FAILURE);
 			} else if (shpid > 0) {
-				rv = system(iicmd);
-				if (rv < 0 || WEXITSTATUS(rv) == 127)
-					killpg(sid, SIGKILL);
+				system(iicmd);
 				free(iicmd);
 				continue;
 			}
@@ -139,9 +137,7 @@ main(int argc, char **argv)
 				killpg(sid, SIGKILL);
 			_exit(EXIT_SUCCESS);
 		} else {
-			rv = system(iicmd);
-			if (rv < 0 || WEXITSTATUS(rv) == 127)
-				_exit(EXIT_FAILURE);
+			system(iicmd);
 			free(iicmd);
 		}
 	}
