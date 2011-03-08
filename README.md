@@ -103,7 +103,8 @@ issue tracker at [https://github.com/buncombe/iii/issues][issues] (requires
 registration) or send a message over IRC to buncombe on the [OFTC
 network][oftc].
 
-The project has also a dedicated IRC channel, #ii, on the OFTC network.
+The upstream ii(1) project has also a dedicated IRC channel, #ii, on the OFTC
+network.
 
 [nion]: http://nion.modprobe.de/blog/archives/440-Using-the-ii-irc-client.html
 [hg]: http://hg.suckless.org/ii/shortlog
