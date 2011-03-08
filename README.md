@@ -33,7 +33,7 @@ about wrapper(1) and what the purpose of it is, consult its manpage
 ([txt][wrapper_man_txt] or [html][wrapper_man_html]).
 
 Below are some changes to ii(1) listed that are not part of the [upstream
-version of ii(1)][ii], but that this bundle provides:
+version][ii], but that this bundle provides:
 
 * SSLv2/SSLv3/TLSv1 encryption.
 * More detailed documentation.
@@ -106,6 +106,12 @@ network][oftc].
 The upstream ii(1) project has also a dedicated IRC channel, #ii, on the OFTC
 network.
 
+See also
+--------
+There are some frequently asked questions with answers available in the file
+[doc/FAQ.md][faq]. Have a look at it for more information about ii(1) and
+wrapper(1).
+
 [nion]: http://nion.modprobe.de/blog/archives/440-Using-the-ii-irc-client.html
 [hg]: http://hg.suckless.org/ii/shortlog
 [ii_man_txt]: http://buncombe.github.com/iii/ii.1.txt
@@ -117,3 +123,4 @@ network.
 [mdoc]: https://secure.wikimedia.org/wikipedia/en/wiki/Mandoc
 [oftc]: http://www.oftc.net/oftc/
 [gh_commits]: https://github.com/buncombe/iii/commits/
+[faq]: https://github.com/buncombe/iii/blob/master/doc/FAQ.md
