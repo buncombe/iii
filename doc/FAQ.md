@@ -22,11 +22,10 @@ itself (i.e. /WHO instead of /who).
 
 4. How can I recognize queries?
 -------------------------------
-ii(1) itself doesn't support this, but the queries.sh script is an example of
+ii(1) itself doesn't support this, but the query.sh script is an example of
 how to view the new and changed files in your IRC directory. To get an instant
 notice of a new file, other mechanisms like inotify, dnotify or kevent could be
-used as well, but I was too lazy to try it out since the script is enough for
-me.
+used as well.
 
 5. What other fancy stuff can I do with ii(1)?
 ----------------------------------------------
