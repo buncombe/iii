@@ -90,7 +90,7 @@ main(int argc, char **argv)
 
 	sid = setsid();
 	if (sid < 0)
-		err(EXIT_FAILURE, "Failed to create a new session.");
+		_exit(EXIT_FAILURE);
 
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
