@@ -149,7 +149,7 @@ usage(void)
 {
 	extern char *__progname;
 
-	(void)fprintf(stderr, "usage: %s [-i ii arg] [-s sh arg] \\\n\t --"
+	fprintf(stderr, "usage: %s [-i ii arg] [-s sh arg] \\\n\t --"
 	    " host1 port1 [host2 port2 ...]\n", __progname);
 	exit(EXIT_FAILURE);
 }
