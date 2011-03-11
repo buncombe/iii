@@ -30,7 +30,7 @@
 #ifdef USESSL
 #define SSL_SERVER_PORT 6697
 #define WRITE(conn, msg) (use_ssl ? SSL_write(irc->sslHandle, msg, strlen(msg)) : write(conn->irc, msg, strlen(msg)))
-#define READ(fd, buf, s) (from_srv && use_ssl ? r = SSL_read(irc->sslHandle, buf, s) : read(fd, buf, s))
+#define READ(fd, buf, s) (from_srv && use_ssl ? SSL_read(irc->sslHandle, buf, s) : read(fd, buf, s))
 #else
 #define WRITE(irc, msg) (write(irc, msg, strlen(msg)))
 #define READ(fd, buf, s) (read(fd, buf, s))
@@ -456,22 +456,9 @@ static void proc_server_cmd(char *buf) {
 
 #ifdef USESSL
 static int read_line(int fd, size_t res_len, char *buf, size_t from_srv) {
-	size_t i = 0;
-	int r;
-	char c = 0;
-	do {
-		if(READ(fd, &c, sizeof(char)) != sizeof(char))
-			return -1;
-		buf[i++] = c;
-	}
-	while(c != '\n' && i < res_len);
-	buf[i - 1] = 0;			/* eliminates '\n' */
-	if(from_srv && use_ssl && SSL_pending(irc->sslHandle))
-		return 1;
-	return 0;
-}
 #else
 static int read_line(int fd, size_t res_len, char *buf) {
+#endif
 	size_t i = 0;
 	char c = 0;
 	do {
@@ -481,9 +468,12 @@ static int read_line(int fd, size_t res_len, char *buf) {
 	}
 	while(c != '\n' && i < res_len);
 	buf[i - 1] = 0;			/* eliminates '\n' */
+#ifdef USESSL
+	if(from_srv && use_ssl && SSL_pending(irc->sslHandle))
+		return 1;
+#endif
 	return 0;
 }
-#endif
 
 static void handle_channels_input(Channel *c) {
 	static char buf[PIPE_BUF];
@@ -502,10 +492,10 @@ static void handle_channels_input(Channel *c) {
 	}
 	proc_channels_input(c, buf);
 }
-#ifdef USESSL
 static void handle_server_output() {
-	int r = 0;
 	static char buf[PIPE_BUF];
+#ifdef USESSL
+	int r;
 
 	do {
 		r = read_line(irc->irc, PIPE_BUF, buf, 1);
@@ -515,17 +505,14 @@ static void handle_server_output() {
 		} else
 			proc_server_cmd(buf);
 	} while(r != 0);
-}
 #else
-static void handle_server_output() {
-	static char buf[PIPE_BUF];
 	if(read_line(irc, PIPE_BUF, buf) == -1) {
 		perror("ii: remote host closed connection");
 		exit(EXIT_FAILURE);
 	}
 	proc_server_cmd(buf);
-}
 #endif
+}
 
 static void run() {
 	Channel *c;
