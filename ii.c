@@ -453,7 +453,6 @@ static void proc_server_cmd(char *buf) {
 		print_out(argv[TOK_CHAN], message);
 }
 
-
 #ifdef USESSL
 static int read_line(int fd, size_t res_len, char *buf, size_t from_srv) {
 #else
@@ -492,6 +491,7 @@ static void handle_channels_input(Channel *c) {
 	}
 	proc_channels_input(c, buf);
 }
+
 static void handle_server_output() {
 	static char buf[PIPE_BUF];
 #ifdef USESSL
