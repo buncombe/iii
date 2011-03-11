@@ -277,7 +277,7 @@ static void print_out(char *channel, char *buf) {
 	if(strstr(buf, server)) channel="";
 	create_filepath(outfile, sizeof(outfile), channel, "out");
 	if(!(out = fopen(outfile, "a"))) return;
-	if(channel && channel[0]) add_channel(channel);
+	if(channel && channel[0] != '\0') add_channel(channel);
 
 	strftime(buft, sizeof(buft), "%F %R", localtime(&t));
 	fprintf(out, "%s %s\n", buft, buf);
@@ -285,19 +285,26 @@ static void print_out(char *channel, char *buf) {
 }
 
 static void proc_channels_privmsg(char *channel, char *buf) {
-	snprintf(message, PIPE_BUF, "<%s> %s", nick, buf);
-	print_out(channel, message);
-	snprintf(message, PIPE_BUF, "PRIVMSG %s :%s\r\n", channel, buf);
-	WRITE(irc, message);
+	if(channel && channel[0] != '\0') {
+		snprintf(message, PIPE_BUF, "<%s> %s", nick, buf);
+		print_out(channel, message);
+		snprintf(message, PIPE_BUF, "PRIVMSG %s :%s\r\n", channel, buf);
+		WRITE(irc, message);
+	}
 }
 
 static void proc_channels_input(Channel *c, char *buf) {
 	char *p = NULL;
 
-	if(buf[0] && buf[0] != '/') {
+	if(!buf || *buf == '\0')
+		return;
+
+	if(*buf != '/') {
 		proc_channels_privmsg(c->name, buf);
 		return;
 	}
+	if(buf[1] == '\0')
+		return;
 	message[0] = '\0';
 	if(buf[2] == ' ' || buf[2] == '\0') switch (buf[1]) {
 		case 'j':
@@ -323,7 +330,7 @@ static void proc_channels_input(Channel *c, char *buf) {
 				else snprintf(message, PIPE_BUF, "TOPIC %s\r\n", &buf[3]);
 			}
 			else {
-				if(c->name[0] == 0) return;
+				if(c->name[0] == '\0') return;
 				if(strlen(buf)>3) snprintf(message, PIPE_BUF, "TOPIC %s :%s\r\n", c->name, &buf[3]);
 				else snprintf(message, PIPE_BUF, "TOPIC %s\r\n", c->name);
 			}
@@ -342,7 +349,7 @@ static void proc_channels_input(Channel *c, char *buf) {
 			}
 			break;
 		case 'l':
-			if(c->name[0] == 0) return;
+			if(c->name[0] == '\0') return;
 			if(strlen(buf)>3) snprintf(message, PIPE_BUF, "PART %s :%s\r\n", c->name, &buf[3]);
 			else snprintf(message, PIPE_BUF, "PART %s\r\n", c->name);
 			if(IS_CHANNEL(c->name)) WRITE(irc, message);
@@ -412,7 +419,7 @@ static void proc_server_cmd(char *buf) {
 		return;
 	} else if(!argv[TOK_NICKSRV] || !argv[TOK_USER]) {	/* server command */
 		snprintf(message, PIPE_BUF, "%s%s", argv[TOK_ARG] ? argv[TOK_ARG] : "", argv[TOK_TEXT] ? argv[TOK_TEXT] : "");
-		print_out(0, message);
+		print_out("", message);
 		return;
 	} else if(!strncmp("ERROR", argv[TOK_CMD], 6))
 		snprintf(message, PIPE_BUF, "-!- error %s", argv[TOK_TEXT] ? argv[TOK_TEXT] : "unknown");
@@ -526,7 +533,7 @@ static void run() {
 			exit(EXIT_FAILURE);
 		} else if(r == 0) {
 			if(time(NULL) - last_response >= PING_TIMEOUT) {
-				print_out(NULL, "-!- ii shutting down: ping timeout");
+				print_out("", "-!- ii shutting down: ping timeout");
 				exit(EXIT_FAILURE);
 			}
 			WRITE(irc, ping_msg);
@@ -552,11 +559,13 @@ int main(int argc, char *argv[]) {
 	char *key = NULL, *fullname = NULL, *dir = NULL;
 #ifdef USESSL
 	char prefix[_POSIX_PATH_MAX] = "irc", *pmsg = message + 17;
-#else
-	char prefix[_POSIX_PATH_MAX] = "irc";
-#endif
 
 	while((i = getopt(argc, argv, "ei:s:p:n:k:f:d:")) != -1) {
+#else
+	char prefix[_POSIX_PATH_MAX] = "irc";
+
+	while((i = getopt(argc, argv, "i:s:p:n:k:f:d:")) != -1) {
+#endif
 		switch (i) {
 #ifdef USESSL
 			case 'e': use_ssl = 1; break;
@@ -591,7 +600,7 @@ int main(int argc, char *argv[]) {
 			if(i > 0) pmsg += 3;
 			else pmsg += 2;
 		}
-		print_out(NULL, message);
+		print_out("", message);
 	}
 #endif
 	run();
