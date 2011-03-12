@@ -74,7 +74,7 @@ static void usage() {
 			"usage: ii [-i <irc dir>] [-s <host>] [-p <port>]\n"
 			"          [-n <nick>] [-k <password>] [-f <fullname>]\n"
 #ifdef USESSL
-			"          [-e] [-d <directory>]\n");
+			"          [-a] [-e] [-d <directory>]\n");
 #else
 			"          [-d <directory>]\n");
 #endif
@@ -214,19 +214,27 @@ static void login(char *key, char *fullname, size_t use_sasl) {
 
 	if(key && use_sasl) {
 		size = strlen(key) + strlen(nick) * 2 + 2;
-		auth = calloc(size, 1);
+		if((auth = calloc(size, 1)) == NULL) {
+			perror("ii: cannot allocate memory");
+			exit(EXIT_FAILURE);
+		}
 		memcpy(auth, nick, strlen(nick));
 		mcat(auth, strlen(nick) + 1, nick, strlen(nick));
 		mcat(auth, strlen(nick) * 2 + 2, key, strlen(key)); /* auth = nick\0nick\0key (no trailing NUL) */
-		ret = base64_encode(auth, size);
+		if((ret = base64_encode(auth, size)) == NULL) {
+			perror("ii: failed to encode.");
+			exit(EXIT_FAILURE);
+		}
 		snprintf(message, PIPE_BUF, "CAP REQ :sasl\r\nNICK %s\r\nUSER %s localhost * :%s\r\nAUTHENTICATE PLAIN\r\nAUTHENTICATE %s\r\nCAP END\r\n", nick, nick, fullname ? fullname : nick, ret);
 		free(auth);
 		free(ret);
+	}
 #endif
-	} else if(key && !use_sasl) snprintf(message, PIPE_BUF,
-				"PASS %s\r\nNICK %s\r\nUSER %s localhost * :%s\r\n", key,
+
+	if(key && !use_sasl) snprintf(message, PIPE_BUF,
+ 				"PASS %s\r\nNICK %s\r\nUSER %s localhost * :%s\r\n", key,
 				nick, nick, fullname ? fullname : nick);
-	else snprintf(message, PIPE_BUF, "NICK %s\r\nUSER %s localhost * :%s\r\n",
+	else if(!key) snprintf(message, PIPE_BUF, "NICK %s\r\nUSER %s localhost * :%s\r\n",
 				nick, nick, fullname ? fullname : nick);
 	WRITE(irc, message);	/* login */
 }
