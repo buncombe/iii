@@ -174,8 +174,56 @@ static void rm_channel(Channel *c) {
 	free(c);
 }
 
-static void login(char *key, char *fullname) {
-	if(key) snprintf(message, PIPE_BUF,
+#ifdef USESSL
+static char *base64_encode(const char *input, int length) {
+	BIO *b64, *bmem;
+        BUF_MEM *bptr;
+	char *ret = NULL;
+
+	if (!input)
+		return ret;
+
+	if (length < 1)
+		length = strlen(input);
+
+	bmem = BIO_new(BIO_s_mem());
+	b64 = BIO_new(BIO_f_base64());
+	b64 = BIO_push(b64, bmem);
+	BIO_write(b64, input, length);
+	BIO_flush(b64);
+	BIO_get_mem_ptr(b64, &bptr);
+	ret = strndup(bptr->data, bptr->length);
+	BIO_free_all(b64);
+
+	return ret;
+}
+
+
+void *mcat(void *s1, size_t n1, void *s2, size_t n2) {
+	void *target = (char*)s1 + n1;
+
+	memcpy(target,s2, n2);
+	return s1;
+}
+#endif
+
+static void login(char *key, char *fullname, size_t use_sasl) {
+#ifdef USESSL
+	char *auth, *ret;
+	size_t size;
+
+	if(key && use_sasl) {
+		size = strlen(key) + strlen(nick) * 2 + 2;
+		auth = calloc(size, 1);
+		memcpy(auth, nick, strlen(nick));
+		mcat(auth, strlen(nick) + 1, nick, strlen(nick));
+		mcat(auth, strlen(nick) * 2 + 2, key, strlen(key)); /* auth = nick\0nick\0key (no trailing NUL) */
+		ret = base64_encode(auth, size);
+		snprintf(message, PIPE_BUF, "CAP REQ :sasl\r\nNICK %s\r\nUSER %s localhost * :%s\r\nAUTHENTICATE PLAIN\r\nAUTHENTICATE %s\r\nCAP END\r\n", nick, nick, fullname ? fullname : nick, ret);
+		free(auth);
+		free(ret);
+#endif
+	} else if(key && !use_sasl) snprintf(message, PIPE_BUF,
 				"PASS %s\r\nNICK %s\r\nUSER %s localhost * :%s\r\n", key,
 				nick, nick, fullname ? fullname : nick);
 	else snprintf(message, PIPE_BUF, "NICK %s\r\nUSER %s localhost * :%s\r\n",
@@ -567,13 +615,14 @@ static void run() {
 }
 
 int main(int argc, char *argv[]) {
+	size_t use_sasl = 0;
 	int i;
 	unsigned short port = SERVER_PORT;
 	char *key = NULL, *fullname = NULL, *dir = NULL;
 #ifdef USESSL
 	char prefix[_POSIX_PATH_MAX] = "irc", *pmsg = message + 17;
 
-	while((i = getopt(argc, argv, "ei:s:p:n:k:f:d:")) != -1) {
+	while((i = getopt(argc, argv, "aei:s:p:n:k:f:d:")) != -1) {
 #else
 	char prefix[_POSIX_PATH_MAX] = "irc";
 
@@ -581,6 +630,7 @@ int main(int argc, char *argv[]) {
 #endif
 		switch (i) {
 #ifdef USESSL
+			case 'a': use_sasl = 1; break;
 			case 'e': use_ssl = 1; break;
 #endif
 			case 'i': snprintf(prefix,sizeof(prefix),"%s", optarg); break;
@@ -604,7 +654,7 @@ int main(int argc, char *argv[]) {
 	create_dirtree(path);
 
 	add_channel(""); /* master channel */
-	login(key, fullname);
+	login(key, fullname, use_sasl);
 #ifdef USESSL
 	if (use_ssl && fp_len) {
 		snprintf(message, PIPE_BUF, "MD5 Fingerprint: ");
