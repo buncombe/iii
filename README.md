@@ -35,6 +35,7 @@ about wrapper(1) and what the purpose of it is, consult its manpage
 Below are some changes to ii(1) listed that are not part of the [upstream
 version][ii], but that this bundle provides:
 
+* SASL PLAIN support.
 * SSLv2/SSLv3/TLSv1 encryption.
 * More detailed documentation.
 * A [mdoc][mdoc] formatted manpage.
