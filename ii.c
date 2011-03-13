@@ -16,6 +16,8 @@
 #include <time.h>
 #include <unistd.h>
 #ifdef USESSL
+#include <openssl/bio.h>
+#include <openssl/evp.h>
 #include <openssl/rand.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
@@ -249,10 +251,10 @@ static conn *ssl_connect(int fd) {
 		exit(EXIT_FAILURE);
 	}
 	c->irc = fd;
+	c->sslHandle = NULL;
+	c->sslContext = NULL;
 
 	if (use_ssl) {
-		c->sslHandle = NULL;
-		c->sslContext = NULL;
 		SSL_load_error_strings();
 		SSL_library_init();
 		c->sslContext = SSL_CTX_new(SSLv23_client_method());
