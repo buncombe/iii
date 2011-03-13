@@ -51,9 +51,6 @@ typedef struct {
 	SSL *sslHandle;
 	SSL_CTX *sslContext;
 } conn;
-#endif
-
-#ifdef USESSL
 static size_t use_ssl = 0;
 static conn *irc;
 static unsigned char fp[EVP_MAX_MD_SIZE];
@@ -61,7 +58,6 @@ static int fp_len = 0;
 #else
 static int irc;
 #endif
-static time_t last_response;
 static Channel *channels = NULL;
 static char *host = "irc.freenode.net";
 static char nick[32] = "anonymous";	/* might change while running */
@@ -578,6 +574,7 @@ static void run() {
 	fd_set rd;
 	struct timeval tv;
 	char ping_msg[17] = "PING localhost\r\n";
+	time_t last_response;
 
 	for(;;) {
 		FD_ZERO(&rd);
