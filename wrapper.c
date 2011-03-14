@@ -20,15 +20,15 @@
 
 static void usage(void);
 
-#define FINDELEM(a, b) (((a) - (b)) / 2 + 1)
+#define ELEMENT(i) ((i) / 2 + 1)
 
 int
 main(int argc, char **argv)
 {
 	char *iiarg = NULL, *iicmd = NULL, *sharg = NULL;
 	size_t size;
-	int ch, i, j, rv;
-	pid_t iipid, shpid, sid;
+	int ch, i, rv;
+	pid_t iipid, shpid;
 
 	if (argc < 3)
 		usage();
@@ -53,32 +53,30 @@ main(int argc, char **argv)
 			/* NOTREACHED */
 		}
 
-	for (i = 1; i < argc - 2; i++)
-		if (!strcmp(argv[i], "--"))
-			break;
-	i++;
-	/* argv[i] is now, hopefully, the first hostname. */
-	if ((argc - i) & 1)
+	argc -= optind;
+	argv += optind;
+
+	if (argc & 1)
 		usage();
 
 	/* Validate the hostnames and ports. */
-	for (j = i; j < argc; j++)
-		if ((j - i) & 1) {
-			if (valport(argv[j]))
-				errx(EXIT_FAILURE, "Port number `%lu' is not"
-				    " ok.", (unsigned long)FINDELEM(j, i));
+	for (i = 0; i < argc; i++)
+		if (i & 1) {
+			if (valport(argv[i]))
+				errx(EXIT_FAILURE, "Port number `%d' is not"
+				    " ok.", ELEMENT(i));
 		} else
-			if (valhost(argv[j]))
-				errx(EXIT_FAILURE, "Hostname `%lu' is not ok.",
-				    (unsigned long)FINDELEM(j, i));
+			if (valhost(argv[i]))
+				errx(EXIT_FAILURE, "Hostname `%d' is not ok.",
+					ELEMENT(i));
 
 	if (iiarg)
 		printf("ii arg: `%s'.\n", iiarg);
 	if (sharg)
 		printf("sh arg: `%s'.\n", sharg);
-	for (j = i; j < argc - 1; j += 2)
-		printf("Server[%lu]: %s:%d\n", (unsigned long)FINDELEM(j, i),
-		    argv[j], atoi(argv[j + 1]));
+	for (i = 0; i < argc - 1; i += 2)
+		printf("Server[%d]: %s:%d\n", ELEMENT(i), argv[i],
+		    atoi(argv[i + 1]));
 
 	iipid = fork();
 	if (iipid < 0)
@@ -88,8 +86,7 @@ main(int argc, char **argv)
 
 	umask(0);
 
-	sid = setsid();
-	if (sid < 0)
+	if (setsid() < 0)
 		_exit(EXIT_FAILURE);
 
 	close(STDIN_FILENO);
@@ -97,29 +94,32 @@ main(int argc, char **argv)
 	close(STDERR_FILENO);
 	srandom(time(NULL));
 	signal(SIGCHLD, SIG_IGN);
+	shpid = 0;
 
 	for (;;) {
-		if (sharg && shpid > 0)
-			if (kill(shpid, SIGKILL) == -1 && errno != ESRCH)
-				_exit(EXIT_FAILURE);
+		if (sharg && shpid && kill(shpid, SIGKILL) && errno != ESRCH)
+			_exit(EXIT_FAILURE);
 
 		sleep(LOOPSLEEP);
 
 		/* http://eternallyconfuzzled.com/arts/jsw_art_rand.aspx */
-		j = i + 1 + random() * 1.0 / (RAND_MAX + 1.0) * (argc - i - 1);
-		if ((j - i) & 1)
-			j--;
-		size = strlen(iiarg) + strlen(argv[j]) + strlen(argv[j + 1]) +
-		    strlen(IIEXEC) + 11;
+		i = random() * 1.0 / (RAND_MAX + 1.0) * (argc - 1);
+		if (i & 1)
+			i--;
+		size = strlen(argv[i]) + strlen(argv[i + 1]) + strlen(IIEXEC) +
+		    10;
+		if (iiarg)
+			size += strlen(iiarg);
 
 		if ((iicmd = calloc(size, 1)) == NULL)
 			_exit(EXIT_FAILURE);
 		strlcpy(iicmd, IIEXEC" ", size);
-		strlcat(iicmd, iiarg, size);
+		if (iiarg)
+			strlcat(iicmd, iiarg, size);
 		strlcat(iicmd, " -s ", size);
-		strlcat(iicmd, argv[j], size);
+		strlcat(iicmd, argv[i], size);
 		strlcat(iicmd, " -p ", size);
-		strlcat(iicmd, argv[j + 1], size);
+		strlcat(iicmd, argv[i + 1], size);
 
 		if (sharg) {
 			shpid = fork();
@@ -134,7 +134,7 @@ main(int argc, char **argv)
 			sleep(CHLDSLEEP);
 			rv = system(sharg);
 			if (rv < 0 || WEXITSTATUS(rv) != EXIT_SUCCESS)
-				killpg(sid, SIGKILL);
+				killpg(0, SIGKILL);
 			_exit(EXIT_SUCCESS);
 		} else {
 			system(iicmd);
@@ -149,7 +149,7 @@ usage(void)
 {
 	extern char *__progname;
 
-	fprintf(stderr, "usage: %s [-i ii arg] [-s sh arg] \\\n\t --"
+	fprintf(stderr, "usage: %s [-i ii arg] [-s sh arg] \\\n\t"
 	    " host1 port1 [host2 port2 ...]\n", __progname);
 	exit(EXIT_FAILURE);
 }
