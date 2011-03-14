@@ -4,7 +4,7 @@ NAME
      wrapper - wraps ii(1) and allows execution on connect
 
 SYNOPSIS
-     wrapper [-i ii arg] [-s sh arg] -- host1 port1 [host2 port2 ...]
+     wrapper [-i ii arg] [-s sh arg] host1 port1 [host2 port2 ...]
 
 DESCRIPTION
      The wrapper utility randomly selects one pair of hosts and ports before
@@ -32,4 +32,4 @@ CAVEATS
      connections are made to various hosts, pass it the -d flag.  The argument
      of the flag will override this part of the file path.
 
-OpenBSD 4.8			March 12, 2011			   OpenBSD 4.8
+OpenBSD 4.8			March 15, 2011			   OpenBSD 4.8
