@@ -97,7 +97,7 @@ main(int argc, char **argv)
 	shpid = 0;
 
 	for (;;) {
-		if (sharg && shpid && kill(shpid, SIGKILL) && errno != ESRCH)
+		if (sharg && shpid && kill(shpid, SIGTERM) && errno != ESRCH)
 			_exit(EXIT_FAILURE);
 
 		sleep(LOOPSLEEP);
@@ -134,7 +134,7 @@ main(int argc, char **argv)
 			sleep(CHLDSLEEP);
 			rv = system(sharg);
 			if (rv < 0 || WEXITSTATUS(rv) != EXIT_SUCCESS)
-				killpg(0, SIGKILL);
+				killpg(0, SIGTERM);
 			_exit(EXIT_SUCCESS);
 		} else {
 			system(iicmd);
