@@ -94,14 +94,8 @@ main(int argc, char **argv)
 	close(STDERR_FILENO);
 	srandom(time(NULL));
 	signal(SIGCHLD, SIG_IGN);
-	shpid = 0;
 
 	for (;;) {
-		if (sharg && shpid && kill(shpid, SIGTERM) && errno != ESRCH)
-			_exit(EXIT_FAILURE);
-
-		sleep(LOOPSLEEP);
-
 		/* http://eternallyconfuzzled.com/arts/jsw_art_rand.aspx */
 		i = random() * 1.0 / (RAND_MAX + 1.0) * (argc - 1);
 		if (i & 1)
@@ -110,7 +104,6 @@ main(int argc, char **argv)
 		    10;
 		if (iiarg)
 			size += strlen(iiarg);
-
 		if ((iicmd = calloc(size, 1)) == NULL)
 			_exit(EXIT_FAILURE);
 		strlcpy(iicmd, IIEXEC" ", size);
@@ -125,21 +118,21 @@ main(int argc, char **argv)
 			shpid = fork();
 			if (shpid < 0) {
 				_exit(EXIT_FAILURE);
-			} else if (shpid > 0) {
-				system(iicmd);
-				free(iicmd);
-				continue;
+			} else if (!shpid) {
+				sleep(CHLDSLEEP);
+				rv = system(sharg);
+				if (rv < 0 || WEXITSTATUS(rv) != EXIT_SUCCESS)
+					killpg(0, SIGKILL);
+				_exit(EXIT_SUCCESS);
 			}
-
-			sleep(CHLDSLEEP);
-			rv = system(sharg);
-			if (rv < 0 || WEXITSTATUS(rv) != EXIT_SUCCESS)
-				killpg(0, SIGTERM);
-			_exit(EXIT_SUCCESS);
-		} else {
-			system(iicmd);
-			free(iicmd);
 		}
+
+		rv = system(iicmd);
+		if (rv < 0 || WEXITSTATUS(rv) == 127 ||
+		    (shpid && kill(shpid, SIGKILL) && errno != ESRCH))
+			_exit(EXIT_FAILURE);
+		free(iicmd);
+		sleep(LOOPSLEEP);
 	}
 	/* NOTREACHED */
 }
