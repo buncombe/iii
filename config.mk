@@ -41,7 +41,7 @@ CFLAGS		+= -g -O0 -W -Wall $(INCLUDES) -DVERSION=\"$(VERSION)\" \
     -DIIEXEC=\"$(IIEXEC)\" -DCHLDSLEEP=$(CHLDSLEEP) \
     -DLOOPSLEEP=$(LOOPSLEEP) -DUSESSL
 
-# Uncomment to disable SSL support in ii(1):
+# Uncomment to disable SSL and SASL support in ii(1):
 #LIBS		= -L$(LIBDIR) -L/usr/lib -lc
 #CFLAGS		= -g -O0 -W -Wall $(INCLUDES) -DVERSION=\"$(VERSION)\" \
     -DIIEXEC=\"$(IIEXEC)\" -DCHLDSLEEP=$(CHLDSLEEP) \

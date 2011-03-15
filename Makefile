@@ -60,4 +60,4 @@ uninstall:
 	rm -f $(DESTDIR)/$(BINDIR)/ii $(DESTDIR)/$(BINDIR)/wrapper
 
 clean:
-	rm -f ii wrapper */*~ *.o *.core *.tar.gz $(FORMAT) $(CONVERT)
+	rm -f ii wrapper */*~ *~ *.o *.core *.tar.gz $(FORMAT) $(CONVERT)
