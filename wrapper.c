@@ -129,11 +129,10 @@ main(int argc, char **argv)
 			}
 		}
 
-		rv = system(iicmd);
-		if (rv < 0 || WEXITSTATUS(rv) == 127 ||
-		    (shpid && kill(shpid, SIGKILL) && errno != ESRCH))
-			_exit(EXIT_FAILURE);
+		system(iicmd);
 		free(iicmd);
+		if (shpid && kill(shpid, SIGKILL) && errno != ESRCH)
+			_exit(EXIT_FAILURE);
 		sleep(LOOPSLEEP);
 	}
 	/* NOTREACHED */
