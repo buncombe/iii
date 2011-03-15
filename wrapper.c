@@ -28,7 +28,7 @@ main(int argc, char **argv)
 	char *iiarg = NULL, *iicmd = NULL, *sharg = NULL;
 	size_t size;
 	int ch, i, rv;
-	pid_t iipid, shpid;
+	pid_t iipid, shpid = 0;
 
 	if (argc < 3)
 		usage();
@@ -124,14 +124,14 @@ main(int argc, char **argv)
 				sleep(CHLDSLEEP);
 				rv = system(sharg);
 				if (rv < 0 || WEXITSTATUS(rv) != EXIT_SUCCESS)
-					killpg(0, SIGKILL);
+					killpg(0, SIGTERM);
 				_exit(EXIT_SUCCESS);
 			}
 		}
 
 		system(iicmd);
 		free(iicmd);
-		if (shpid && kill(shpid, SIGKILL) && errno != ESRCH)
+		if (shpid && kill(shpid, SIGTERM) && errno != ESRCH)
 			_exit(EXIT_FAILURE);
 		sleep(LOOPSLEEP);
 	}
