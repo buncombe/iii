@@ -98,6 +98,7 @@ main(int argc, char **argv)
 	for (;;) {
 		/* http://eternallyconfuzzled.com/arts/jsw_art_rand.aspx */
 		i = random() * 1.0 / (RAND_MAX + 1.0) * (argc - 1);
+		/* If we hit a port number, choose its relating hostname. */
 		if (i & 1)
 			i--;
 		size = strlen(argv[i]) + strlen(argv[i + 1]) + strlen(IIEXEC) +
@@ -119,6 +120,7 @@ main(int argc, char **argv)
 			if (shpid < 0) {
 				_exit(EXIT_FAILURE);
 			} else if (!shpid) {
+				/* Child process with process ID shpid. */
 				sleep(CHLDSLEEP);
 				rv = system(sharg);
 				if (rv < 0 || WEXITSTATUS(rv) != EXIT_SUCCESS)
