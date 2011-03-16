@@ -42,6 +42,9 @@ main(int argc, char **argv)
 			iiarg = optarg;
 			break;
 		case 's':
+			if (sharg)
+				errx(EXIT_FAILURE, "Do not use the -s flag"
+				    " multiple times.");
 			if (valsysarg(optarg))
 				errx(EXIT_FAILURE, "sh(1) meta-characters and"
 				    " quotation marks are not allowed in `sh"
@@ -127,17 +130,19 @@ main(int argc, char **argv)
 			} else if (!shpid) {
 				/* Child process with process ID shpid. */
 				sleep(CHLDSLEEP);
-				rv = system(sharg); /* Will not block. */
+				/* Will not block. */
+				rv = system(sharg);
 				if (rv < 0 || WEXITSTATUS(rv) != EXIT_SUCCESS)
-					killpg(0, SIGTERM);
+					killpg(0, SIGKILL);
 				_exit(EXIT_SUCCESS);
 			}
 		}
 
-		system(iicmd);
+		rv = system(iicmd);
 		free(iicmd);
-		if (shpid && kill(shpid, SIGTERM) && errno != ESRCH)
-			_exit(EXIT_FAILURE);
+		if ((shpid && kill(shpid, SIGKILL) && errno != ESRCH) ||
+		    rv < 0 || WEXITSTATUS(rv) == 127)
+			killpg(0, SIGKILL);
 		sleep(LOOPSLEEP);
 	}
 	/* NOTREACHED */
