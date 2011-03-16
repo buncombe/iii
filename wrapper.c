@@ -25,15 +25,15 @@ static void usage(void);
 int
 main(int argc, char **argv)
 {
-	char *iiarg = NULL, *iicmd = NULL, *sharg = NULL;
-	size_t size;
-	int ch, i, rv;
+	int i, rv;
 	pid_t iipid, shpid = 0;
+	size_t size;
+	char *iiarg = NULL, *iicmd = NULL, *sharg = NULL;
 
 	if (argc < 3)
 		usage();
-	while ((ch = getopt(argc, argv, "i:s:")) != -1)
-		switch (ch) {
+	while ((rv = getopt(argc, argv, "i:s:")) != -1)
+		switch (rv) {
 		case 'i':
 			if (valsysarg(optarg))
 				errx(EXIT_FAILURE, "sh(1) meta-characters and"
@@ -46,7 +46,12 @@ main(int argc, char **argv)
 				errx(EXIT_FAILURE, "sh(1) meta-characters and"
 				    " quotation marks are not allowed in `sh"
 				    " arg'.");
-			sharg = optarg;
+			size = strlen(optarg);
+			if ((sharg = calloc(size + 3, 1)) == NULL)
+				err(EXIT_FAILURE, "Failed to allocate"
+				    " memory.");
+			memcpy(sharg, optarg, size);
+			memcpy(sharg + size, " &", 2);
 			break;
 		default:
 			usage();
@@ -122,7 +127,7 @@ main(int argc, char **argv)
 			} else if (!shpid) {
 				/* Child process with process ID shpid. */
 				sleep(CHLDSLEEP);
-				rv = system(sharg);
+				rv = system(sharg); /* Will not block. */
 				if (rv < 0 || WEXITSTATUS(rv) != EXIT_SUCCESS)
 					killpg(0, SIGTERM);
 				_exit(EXIT_SUCCESS);
