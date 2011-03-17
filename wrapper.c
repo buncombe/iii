@@ -138,11 +138,10 @@ main(int argc, char **argv)
 			}
 		}
 
-		rv = system(iicmd);
+		system(iicmd);
 		free(iicmd);
-		if ((shpid && kill(shpid, SIGKILL) && errno != ESRCH) ||
-		    rv < 0 || WEXITSTATUS(rv) == 127)
-			killpg(0, SIGKILL);
+		if (shpid && kill(shpid, SIGKILL) && errno != ESRCH)
+			_exit(EXIT_FAILURE);
 		sleep(LOOPSLEEP);
 	}
 	/* NOTREACHED */
