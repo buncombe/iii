@@ -70,7 +70,7 @@ input into UTF-8 (1) and on write convert the UTF-8 data to ISO-8859-1 (2).
 		print;
 	}
 
-Use it in combination with cat(1) by invoking `cat out | perl
+Use it in combination with tail(1) by invoking `tail -f out | perl
 ./above_perl_script.pl`.
 
 (2)
