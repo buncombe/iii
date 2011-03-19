@@ -110,8 +110,7 @@ network.
 See also
 --------
 There are some frequently asked questions with answers available in the file
-[doc/FAQ.md][faq]. Have a look at it for more information about ii(1) and
-wrapper(1).
+[doc/FAQ.md][faq]. Have a look at it for more information about ii(1).
 
 [nion]: http://nion.modprobe.de/blog/archives/440-Using-the-ii-irc-client.html
 [hg]: http://hg.suckless.org/ii/shortlog
