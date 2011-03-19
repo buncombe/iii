@@ -40,6 +40,46 @@ Nagios or generating of channel stats. Your imagination should be boundless.
 
 6. How can I automatically reconnect to a server or network?
 ------------------------------------------------------------
-As you might have guessed, ii(1) does not support this feature. The fact is,
-however, that it easily can be done by scripting or with the wrapper(1) program
-that is shipped with this package of ii(1).
+ii(1) does not support this feature. The fact is, however, that it easily can
+be done by scripting or with the wrapper(1) program that is shipped with this
+package of ii(1). See its manpage ([txt][wrapper_man_txt] or
+[html][wrapper_man_html]) for more information about the application.
+
+7. How to deal with different character encodings?
+--------------------------------------------------
+As an example, a channel might recommend its users to use the character
+encoding ISO-8859-1 whilst the system that ii(1) is running on is using UTF-8.
+This will work very well as long only characters in the range 32-126 are used,
+since that range (called the G0 subset) maps to the same coded G0 subset of
+UTF-8 (except that the 0x7F character is missing in ISO-8859-1). However,
+problem arise when someone in the channel starts using characters in the G1
+subset of ISO-8859-1 as this subset in UTF-8 only consists of continuation
+bytes, start bytes and some bytes that must not appear in a valid UTF-8
+sequence. The solution to this problem is to decode the ISO-8859-1 encoded
+input into UTF-8 (1) and on write convert the UTF-8 data to ISO-8859-1 (2).
+
+(1)
+
+	use Encode;
+	use strict;
+	use warnings;
+	
+	while (<>) {
+		$_ = encode("utf8", decode("iso-8859-1", $_,
+		    Encode::FB_DEFAULT));
+		print;
+	}
+
+Use it in combination with cat(1) by invoking `cat out | perl
+./above_perl_script.pl`.
+
+(2)
+
+(This example assumes that vim(1) is used for writing to the channel.) Set the
+file encoding to ISO-8859-1 (`:set fileencoding=iso-8859-1`), make sure that
+the encoding is utf-8 (`:set encoding=utf-8`) and then simply write to the
+channel (`:w>>in`). [README.md][readme].
+
+[readme]: https://github.com/buncombe/iii/blob/master/README.md
+[wrapper_man_txt]: http://buncombe.github.com/iii/wrapper.1.txt
+[wrapper_man_html]: http://buncombe.github.com/iii/wrapper.1.html
