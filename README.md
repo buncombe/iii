@@ -84,7 +84,7 @@ details on this.
 
 Changelog
 ---------
-See the CHANGES file that comes with this package of ii(1).
+See the [CHANGES][changes] file that comes with this package of ii(1).
 
 Notice that there is no explicit changelog available for ii(1) prior to version
 1.2, but, in order to get an overview of what has changed since the start of
@@ -125,3 +125,4 @@ wrapper(1).
 [oftc]: http://www.oftc.net/oftc/
 [gh_commits]: https://github.com/buncombe/iii/commits/
 [faq]: https://github.com/buncombe/iii/blob/master/doc/FAQ.md
+[changes]: https://github.com/buncombe/iii/blob/master/CHANGES
