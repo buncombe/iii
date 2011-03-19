@@ -3,19 +3,20 @@
 # legal rights he or she had in the work, to the extent allowable by law.
 
 include config.mk
-FORMAT = doc/ii.1
-CONVERT = doc/ii.1.txt doc/ii.1.html
-.PHONY: all clean convert dist format install uninstall
+FORMAT = wrapper.1
+CONVERT = wrapper.1.txt wrapper.1.html
+.PHONY: all clean convert format install uninstall
 .SUFFIXES: .in.1 .1 .1.html .1.txt
 
-default: ii format
-all: ii format convert
+default: wrapper format
+all: wrapper format convert
 convert: $(CONVERT)
 format: $(FORMAT)
 
-# Building ii(1):
-ii: ii.o
-	$(CC) -o $@ $@.o $(LDFLAGS)
+# Building wrapper(1):
+wrapper: wrapper.o val.o
+	$(CC) -o $@ $@.o val.o $(LDFLAGS)
+wrapper.o val.o: val.h
 
 # Formatting the manpages:
 .in.1.1:
@@ -28,22 +29,13 @@ ii: ii.o
 .1.1.txt:
 	mandoc -Wall -fstrict $< | col -b >$@
 
-dist: all
-	mkdir ii-$(VERSION)
-	cp Makefile CHANGES README.md LICENSE config.mk TODO ii.c ii-$(VERSION)
-	cp -R doc/ contrib/ ii-$(VERSION)
-	tar -cf ii-$(VERSION).tar ii-$(VERSION)
-	gzip ii-$(VERSION).tar
-	rm -rf ii-$(VERSION)
-
 install: default
 	mkdir -p $(DESTDIR)/$(DOCDIR)
 	mkdir -p $(DESTDIR)/$(BINDIR)
 	mkdir -p $(DESTDIR)/$(MAN1DIR)
 	install -d $(DESTDIR)/$(BINDIR) $(DESTDIR)/$(MAN1DIR)
-	install -m 644 CHANGES README.md doc/FAQ.md LICENSE \
-	    $(DESTDIR)/$(DOCDIR)
-	install -m 775 ii $(DESTDIR)/$(BINDIR)
+	install -m 644 README.md $(DESTDIR)/$(DOCDIR)
+	install -m 775 wrapper $(DESTDIR)/$(BINDIR)
 	install -m 444 $(FORMAT) $(DESTDIR)/$(MAN1DIR)
 
 uninstall:
@@ -51,7 +43,7 @@ uninstall:
 	rm -f $(DESTDIR)/$(MAN1DIR)/`basename $(manpage)`
 .endfor
 	rm -rf $(DESTDIR)/$(DOCDIR)
-	rm -f $(DESTDIR)/$(BINDIR)/ii
+	rm -f $(DESTDIR)/$(BINDIR)/wrapper
 
 clean:
-	rm -f ii */*~ *~ *.o *.core *.tar.gz $(FORMAT) $(CONVERT)
+	rm -f wrapper */*~ *~ *.o *.core $(FORMAT) $(CONVERT)

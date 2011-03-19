@@ -16,14 +16,8 @@ LIBDIR		?= $(PREFIX)/lib
 # Set the following to install to a different root directory:
 DESTDIR		?=
 
-# Macro definitions:
+# The version of ii(1):
 VERSION		?= 1.6
-# The ii(1) executable that the wrapper(1) program will use:
-IIEXEC		?= ii
-# Amount of seconds that it (at most) takes for ii(1) to connect:
-CHLDSLEEP	?= 300
-# Amount of seconds before wrapper(1) (re)initiates an ii(1) instance:
-LOOPSLEEP	?= 60
 
 # Includes and libs:
 INCLUDES	+= -I. -I$(INCDIR) -I/usr/include
@@ -47,6 +41,6 @@ CFLAGS		+= -g -O0 -W -Wall $(INCLUDES) -DVERSION=\"$(VERSION)\" \
     -DIIEXEC=\"$(IIEXEC)\" -DCHLDSLEEP=$(CHLDSLEEP) \
     -DLOOPSLEEP=$(LOOPSLEEP)
 
-# Linker flags. If static binaries are desired, add "-static" to this
+# Linker flags. If a static binary is desired, add "-static" to this
 # environment variable.
 LDFLAGS		+= $(LIBS)

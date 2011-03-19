@@ -20,32 +20,3 @@ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
-
-===============================================================================
-The authors of the patches that can be found inside the directory "patches/":
-
-Author: Evan Gates (emg) <evan.gates@gmail.com>
-Files: patches/ii-1.4-ctcp_action.diff, patches/ii-1.4-autojoin.diff,
-    patches/ii-1.4-exec.diff
-
-Author: Robert Lowry (bobertlo) <robertwlowry@gmail.com>,
-    Evan Gates (emg) <evan.gates@gmail.com>
-File: patches/ii-1.4-joinuser.diff
-
-Author: Robert Lowry (bobertlo) <robertwlowry@gmail.com>
-File: patches/ii-1.4-usernames.diff
-
-Author: Hunter Haugen (Hunner) <h.haugen@gmail.com>
-File: patches/ii-1.4-ssl.diff
-
-===============================================================================
-Work done by Je or Buncombe, on this repository, is released to the public
-according to the following waiver:
-
-	The author of this work has dedicated it to the public by waiving all
-	of his or her rights to the work under copyright law and all related or
-	neighboring legal rights he or she had in the work, to the extent
-	allowable by law.
-
-Files written entirely by one of these two pseudonyms, have the above waiver in
-the opening (before the actual content).
