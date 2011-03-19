@@ -78,8 +78,7 @@ Use it in combination with cat(1) by invoking `cat out | perl
 (This example assumes that vim(1) is used for writing to the channel.) Set the
 file encoding to ISO-8859-1 (`:set fileencoding=iso-8859-1`), make sure that
 the encoding is utf-8 (`:set encoding=utf-8`) and then simply write to the
-channel (`:w>>in`). [README.md][readme].
+channel (`:w>>in`).
 
-[readme]: https://github.com/buncombe/iii/blob/master/README.md
 [wrapper_man_txt]: http://buncombe.github.com/iii/wrapper.1.txt
 [wrapper_man_html]: http://buncombe.github.com/iii/wrapper.1.html
