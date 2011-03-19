@@ -3,15 +3,13 @@
 # legal rights he or she had in the work, to the extent allowable by law.
 
 include config.mk
-FORMAT = doc/ii.1
-CONVERT = doc/ii.1.txt doc/ii.1.html
 .PHONY: all clean convert dist format install uninstall
 .SUFFIXES: .in.1 .1 .1.html .1.txt
 
 default: ii format
 all: ii format convert
-convert: $(CONVERT)
-format: $(FORMAT)
+convert: doc/ii.1.txt doc/ii.1.html
+format: doc/ii.1
 
 # Building ii(1):
 ii: ii.o
@@ -44,14 +42,12 @@ install: default
 	install -m 644 CHANGES README.md doc/FAQ.md LICENSE \
 	    $(DESTDIR)/$(DOCDIR)
 	install -m 775 ii $(DESTDIR)/$(BINDIR)
-	install -m 444 $(FORMAT) $(DESTDIR)/$(MAN1DIR)
+	install -m 444 doc/ii.1 $(DESTDIR)/$(MAN1DIR)
 
 uninstall:
-.for manpage in $(FORMAT)
-	rm -f $(DESTDIR)/$(MAN1DIR)/`basename $(manpage)`
-.endfor
+	rm -f $(DESTDIR)/$(MAN1DIR)/ii.1
 	rm -rf $(DESTDIR)/$(DOCDIR)
 	rm -f $(DESTDIR)/$(BINDIR)/ii
 
 clean:
-	rm -f ii */*~ *~ *.o *.core *.tar.gz $(FORMAT) $(CONVERT)
+	rm -f ii */*~ *~ *.o *.core *.tar.gz doc/ii.1*

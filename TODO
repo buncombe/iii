@@ -2,5 +2,4 @@
 ii source, like recode abilities.
 * Move wrapper + query.sh to "contrib" directory and remove them both from the
 main ii documentation (just reference them as needed).
-* Remove wrapper + query.sh from make default.
 * Restructure ii and improve its functions.

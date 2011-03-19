@@ -7,7 +7,7 @@ ii(1).*
 Description
 -----------
 Adds SSLv2/SSLv3/TLSv1 encryption support via the "-e ssl" argument. It will
-use a default port of 6697 unless a port is been specified with the "-p" flag.
+use a default port of 6697 unless a port has been specified with the "-p" flag.
 
 Authors
 -------

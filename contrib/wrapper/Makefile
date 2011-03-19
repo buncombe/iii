@@ -3,15 +3,13 @@
 # legal rights he or she had in the work, to the extent allowable by law.
 
 include config.mk
-FORMAT = wrapper.1
-CONVERT = wrapper.1.txt wrapper.1.html
 .PHONY: all clean convert format install uninstall
 .SUFFIXES: .in.1 .1 .1.html .1.txt
 
 default: wrapper format
 all: wrapper format convert
-convert: $(CONVERT)
-format: $(FORMAT)
+convert: wrapper.1.txt wrapper.1.html
+format: wrapper.1
 
 # Building wrapper(1):
 wrapper: wrapper.o val.o
@@ -36,14 +34,12 @@ install: default
 	install -d $(DESTDIR)/$(BINDIR) $(DESTDIR)/$(MAN1DIR)
 	install -m 644 README.md $(DESTDIR)/$(DOCDIR)
 	install -m 775 wrapper $(DESTDIR)/$(BINDIR)
-	install -m 444 $(FORMAT) $(DESTDIR)/$(MAN1DIR)
+	install -m 444 wrapper.1 $(DESTDIR)/$(MAN1DIR)
 
 uninstall:
-.for manpage in $(FORMAT)
-	rm -f $(DESTDIR)/$(MAN1DIR)/`basename $(manpage)`
-.endfor
+	rm -f $(DESTDIR)/$(MAN1DIR)/wrapper.1
 	rm -rf $(DESTDIR)/$(DOCDIR)
 	rm -f $(DESTDIR)/$(BINDIR)/wrapper
 
 clean:
-	rm -f wrapper */*~ *~ *.o *.core $(FORMAT) $(CONVERT)
+	rm -f wrapper */*~ *~ *.o *.core wrapper.1*

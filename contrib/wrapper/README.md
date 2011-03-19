@@ -14,7 +14,7 @@ To build and install it, invoke the commands bellow:
 
 Contact
 -------
-Either contact buncombe on the OFTC IRC network (irc.oftc.net:6667), or use the
+Either contact buncombe on the OFTC IRC network (irc.oftc.net:6667) or use the
 [issue tracker at Github][issues].
 
 [mantxt]: http://buncombe.github.com/iii/wrapper.1.txt
