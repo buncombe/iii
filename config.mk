@@ -26,20 +26,15 @@ LIBS		+= -L$(LIBDIR) -L/usr/lib -lc -lssl -lcrypto
 # Compiler flags:
 CC		?= cc
 CFLAGS		+= -g -O0 -W -Wall $(INCLUDES) -DVERSION=\"$(VERSION)\" \
-    -DIIEXEC=\"$(IIEXEC)\" -DCHLDSLEEP=$(CHLDSLEEP) \
-    -DLOOPSLEEP=$(LOOPSLEEP) -DUSESSL
+    -DUSESSL
 
 # Uncomment for compiling on Solaris:
 #LIBS		= -L$(LIBDIR) -L/usr/lib -lc -lsocket -lnsl -lssl -lcrypto
-#CFLAGS		= -g $(INCLUDES) -DVERSION=\"$(VERSION)\" \
-    -DIIEXEC=\"$(IIEXEC)\" -DCHLDSLEEP=$(CHLDSLEEP) \
-    -DLOOPSLEEP=$(LOOPSLEEP) -DUSESSL
+#CFLAGS		= -g $(INCLUDES) -DVERSION=\"$(VERSION)\" -DUSESSL
 
 # Uncomment to disable SSL and SASL support in ii(1):
 #LIBS		= -L$(LIBDIR) -L/usr/lib -lc
-#CFLAGS		= -g -O0 -W -Wall $(INCLUDES) -DVERSION=\"$(VERSION)\" \
-    -DIIEXEC=\"$(IIEXEC)\" -DCHLDSLEEP=$(CHLDSLEEP) \
-    -DLOOPSLEEP=$(LOOPSLEEP)
+#CFLAGS		= -g -O0 -W -Wall $(INCLUDES) -DVERSION=\"$(VERSION)\"
 
 # Linker flags. If a static binary is desired, add "-static" to this
 # environment variable.
