@@ -1,0 +1,6 @@
+* Write a policy file regarding why some sort of things should not go into the
+ii source, like recode abilities.
+* Move wrapper + query.sh to "contrib" directory and remove them both from the
+main ii documentation (just reference them as needed).
+* Remove wrapper + query.sh from make default.
+* Restructure ii and improve its functions.
