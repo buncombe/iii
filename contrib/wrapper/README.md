@@ -16,8 +16,8 @@ appropriate permissions:
 
 Contact
 -------
-Either contact buncombe on the OFTC IRC network (irc.oftc.net:6667) or use the
-[issue tracker at Github][issues].
+Either contact buncombe on the OFTC IRC network (irc.oftc.net; standard ports)
+or use the [iii issue tracker at Github][issues].
 
 [mantxt]: http://buncombe.github.com/iii/wrapper.1.txt
 [manhtml]: http://buncombe.github.com/iii/wrapper.1.html

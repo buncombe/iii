@@ -30,8 +30,7 @@ dist: all
 	mkdir ii-$(VERSION)
 	cp Makefile CHANGES README.md LICENSE config.mk TODO ii.c ii-$(VERSION)
 	cp -R doc/ contrib/ ii-$(VERSION)
-	tar -cf ii-$(VERSION).tar ii-$(VERSION)
-	gzip ii-$(VERSION).tar
+	tar -czf ii-$(VERSION).tar.gz ii-$(VERSION)
 	rm -rf ii-$(VERSION)
 
 install: default
@@ -50,4 +49,4 @@ uninstall:
 	rm -f $(DESTDIR)/$(BINDIR)/ii
 
 clean:
-	rm -f ii */*~ *~ *.o *.core *.tar.gz doc/ii.1*
+	rm -f ii */*~ */*/*~ *~ *.o *.core *.tar.gz doc/ii.1*

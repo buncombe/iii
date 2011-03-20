@@ -42,4 +42,4 @@ uninstall:
 	rm -f $(DESTDIR)/$(BINDIR)/wrapper
 
 clean:
-	rm -f wrapper */*~ *~ *.o *.core wrapper.1*
+	rm -f wrapper *~ *.o *.core wrapper.1*

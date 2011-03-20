@@ -24,8 +24,8 @@ Edit config.mk to match your local setup. ii(1) is installed into /usr/local by
 default. (Notice that it is also possible to adjust the variables in config.mk
 by using environment variables at build time.)
 
-Afterwards, enter the following command to build and install ii(1). (If
-necessary, run it as root):
+Afterwards, run the following command with the appropriate permissions in order
+to build and install ii(1):
 
 	$ make clean install
 
@@ -48,8 +48,8 @@ In vim(1) it is also possible to use ctrl-p (in insert mode) for nick
 completion if the nick has been written in the past. Thanks to Matthias
 Kopfermann for this hint.
 
-For an example of how this nested environment could look like on, check this
-blog post:
+For an example of how this nested environment could look like, check this blog
+post:
 [http://nion.modprobe.de/blog/archives/440-Using-the-ii-irc-client.html][nion]
 
 Configuration
@@ -76,7 +76,8 @@ If you want to contact the developers, just write an e-mail to ii (at) modprobe
 (dot) de. Alternatively, when the subject is specifically related to changes
 that only concern the iii bundle, use the issue tracker at
 [https://github.com/buncombe/iii/issues][issues] (requires registration) or
-send a message over IRC to buncombe on the OFTC IRC network (irc.oftc.net).
+send a message over IRC to buncombe on the OFTC IRC network (irc.oftc.net;
+standard ports).
 
 The ii(1) project has also a dedicated IRC channel, #ii, on the OFTC network.
 
