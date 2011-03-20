@@ -7,10 +7,12 @@ The wrapper(1) utility was mainly written in order to get reconnection
 abilities on networks that do not use round robin DNS. Its manpage
 ([txt][mantxt] or [html][manhtml]) explains more in details how it works.
 
-To build and install it, invoke the commands bellow:
+To build and install wrapper(1), make sure that config.mk is setup correctly
+according to your system and then finally invoke the commands bellow with the
+appropriate permissions:
 
-	cd iii/contrib/wrapper
-	make install
+	$ cd iii/contrib/wrapper
+	$ make install
 
 Contact
 -------
