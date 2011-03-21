@@ -11,12 +11,14 @@ This version of ii(1) is bundled into a package which provides some changes that
 are not part of the [upstream version][ii]. The most notable ones are listed
 below:
 
-* SASL PLAIN support.
-* SSLv2/SSLv3/TLSv1 encryption.
+* SASL PLAIN support.^\*
+* SSLv2/SSLv3/TLSv1 encryption support.^\*
 * More detailed documentation.
 * A [mdoc][mdoc] formatted manpage.
 * Improved command management code.
 * Better handling of the option flags.
+
+\* Requires the OpenSSL library.
 
 Installation
 ------------
