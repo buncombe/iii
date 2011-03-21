@@ -18,7 +18,7 @@ below:
 * Improved command management code.
 * Better handling of the option flags.
 
-\* Requires the OpenSSL library.
+^\* Requires the OpenSSL library.
 
 Installation
 ------------
