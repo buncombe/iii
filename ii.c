@@ -188,7 +188,7 @@ static char *base64_encode(const char *input, int length) {
 	b64 = BIO_new(BIO_f_base64());
 	b64 = BIO_push(b64, bmem);
 	BIO_write(b64, input, length);
-	BIO_flush(b64);
+	(void)BIO_flush(b64);
 	BIO_get_mem_ptr(b64, &bptr);
 	ret = strndup(bptr->data, bptr->length);
 	BIO_free_all(b64);
