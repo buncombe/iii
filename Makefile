@@ -8,8 +8,8 @@ include config.mk
 
 default: ii format
 all: ii format convert
-convert: doc/ii.1.txt doc/ii.1.html
-format: doc/ii.1
+convert: ii.1.txt ii.1.html
+format: ii.1
 
 # Building ii(1):
 ii: ii.o
@@ -28,8 +28,7 @@ ii: ii.o
 
 dist: all
 	mkdir ii-$(VERSION)
-	cp Makefile CHANGES README.md LICENSE config.mk TODO ii.c ii-$(VERSION)
-	cp -R doc/ contrib/ ii-$(VERSION)
+	cp Makefile CHANGES README.md LICENSE config.mk ii.c ii-$(VERSION)
 	tar -czf ii-$(VERSION).tar.gz ii-$(VERSION)
 	rm -rf ii-$(VERSION)
 
@@ -38,10 +37,9 @@ install: default
 	mkdir -p $(DESTDIR)/$(BINDIR)
 	mkdir -p $(DESTDIR)/$(MAN1DIR)
 	install -d $(DESTDIR)/$(BINDIR) $(DESTDIR)/$(MAN1DIR)
-	install -m 644 CHANGES README.md doc/FAQ.md LICENSE \
-	    $(DESTDIR)/$(DOCDIR)
+	install -m 644 CHANGES README.md LICENSE $(DESTDIR)/$(DOCDIR)
 	install -m 775 ii $(DESTDIR)/$(BINDIR)
-	install -m 444 doc/ii.1 $(DESTDIR)/$(MAN1DIR)
+	install -m 444 ii.1 $(DESTDIR)/$(MAN1DIR)
 
 uninstall:
 	rm -f $(DESTDIR)/$(MAN1DIR)/ii.1
@@ -49,4 +47,4 @@ uninstall:
 	rm -f $(DESTDIR)/$(BINDIR)/ii
 
 clean:
-	rm -f ii */*~ */*/*~ *~ *.o *.core *.tar.gz doc/ii.1*
+	rm -f ii *~ *.o *.core *.tar.gz ii.1*
