@@ -26,7 +26,7 @@ LIBS		+= -L$(LIBDIR) -L/usr/lib -lc -lssl -lcrypto
 # Compiler flags:
 CC		?= cc
 CFLAGS		+= -g -O0 -W -Wall $(INCLUDES) -DVERSION=\"$(VERSION)\" \
-    -DUSESSL
+		    -DUSESSL
 
 # Uncomment for compiling on Solaris:
 #LIBS		= -L$(LIBDIR) -L/usr/lib -lc -lsocket -lnsl -lssl -lcrypto
